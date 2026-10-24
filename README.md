@@ -46,7 +46,7 @@ each other in the same directory.
 | openSUSE | `sudo zypper install sane-backends` |
 
 Check that your scanner shows up with `scanimage -L`. Without SANE the app still opens
-and works with image files; **Refresh scanners** explains what is missing.
+and works with image files; **Refresh scanners** explains what to install.
 
 ### 3. ID Scanner
 
@@ -71,7 +71,8 @@ Then start it with `idscanner` (or `idscanner-env/bin/idscanner`, on Windows
 
 ## Use
 
-1. Click **Refresh scanners** and choose your scanner.
+1. Choose your scanner. The app looks for scanners when it starts and remembers your choice;
+   click **Refresh scanners** after connecting or switching on a scanner.
 2. Put the card face down on the glass, anywhere and with its text upright, and close the lid.
 3. Click **Scan front**, turn the card over, then click **Scan back**.
 4. Check the preview and click **Save PDF…**.

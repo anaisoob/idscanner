@@ -2,6 +2,7 @@
 
 import io
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -16,6 +17,27 @@ from PIL import Image
 
 class ScanCancelled(Exception):
     pass
+
+
+def find_scanners(timeout: float = 30) -> list[tuple[str, str]] | None:
+    """SANE devices as (name, description) pairs, or None when SANE is not installed."""
+    try:
+        result = subprocess.run(["scanimage", "-L"], capture_output=True, text=True, timeout=timeout)
+    except FileNotFoundError:
+        return None
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or "Scanner discovery failed.")
+    return [
+        (name, description)
+        for name, description in re.findall(r"device `([^']+)' is (.+)", result.stdout)
+        if not name.startswith("v4l")  # webcams
+    ]
+
+
+def choose_scanner(devices: list[tuple[str, str]], *preferred: str | None) -> str | None:
+    """The first preferred device name that is present, otherwise the first device."""
+    names = [name for name, _ in devices]
+    return next((name for name in preferred if name in names), names[0] if names else None)
 
 
 def scan_side(device: str, front: bool, cancel: Event, timeout: float = 180) -> Image.Image:

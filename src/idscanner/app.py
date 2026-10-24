@@ -1,8 +1,6 @@
 """A small, local-only desktop frontend for id2pdf."""
 
 import queue
-import re
-import subprocess
 import sys
 import threading
 import tkinter
@@ -15,13 +13,13 @@ import id2pdf
 from PIL import Image
 
 from . import settings
-from .operations import ScanCancelled, save_pdf_atomic, scan_side
+from .operations import ScanCancelled, choose_scanner, find_scanners, save_pdf_atomic, scan_side
 from .sidebar import AutoScrollSidebar
 from .system_info import sane_install_help, tk_lacks_xft
 
 ICON = Path(__file__).with_name("icon.png")
-HELP = """1. Click Refresh scanners and select a scanner, place the front of the card face down
-on the glass, and close the lid.
+HELP = """1. Select your scanner (the list is filled when the app starts; Refresh scanners
+looks again), place the front of the card face down on the glass, and close the lid.
 2. Click Scan front, turn the card over, then click Scan back.
 3. Check the preview and choose Save PDF…
 
@@ -84,7 +82,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(panel, text="SCANNER", font=("", 12, "bold")).grid(
             row=2, column=0, padx=24, pady=(30, 8), sticky="w"
         )
-        self.device = ctk.CTkOptionMenu(panel, values=["No scanner selected"])
+        self.device = ctk.CTkOptionMenu(panel, values=["No scanner selected"], command=self.choose_device)
         self.device.grid(row=3, column=0, padx=24, sticky="ew")
         self.controls.append(self.device)
         self.button(panel, "Refresh scanners", self.refresh, 4)
@@ -149,11 +147,12 @@ class App(ctk.CTk):
         # Indeterminate mode always draws its segment, so it gets the track colour while idle.
         self.progress_color = self.progress.cget("progress_color")
         self.progress.configure(progress_color=self.progress.cget("fg_color"))
-        if tk_lacks_xft(self.tk):
+        self.lacks_xft = tk_lacks_xft(self.tk)
+        if self.lacks_xft:
             print(f"ID Scanner: {NO_XFT}", file=sys.stderr)
-            self.status.configure(text=NO_XFT)
         self.update_controls()
         self.after(100, self.poll)
+        self.after(0, lambda: self.refresh(startup=True))
 
     def button(self, parent, text, command, row):
         button = ctk.CTkButton(parent, text=text, command=command, height=36, corner_radius=8)
@@ -280,47 +279,56 @@ class App(ctk.CTk):
             self.update_controls()
         self.after(100, self.poll)
 
-    def refresh(self):
+    def refresh(self, startup=False):
+        """Look for scanners; at startup, problems are only reported in the status line."""
+
         def discover():
             try:
-                result = subprocess.run(["scanimage", "-L"], capture_output=True, text=True, timeout=30)
-            except FileNotFoundError:
-                return None
-            if result.returncode:
-                raise RuntimeError(result.stderr.strip() or "Scanner discovery failed.")
-            return [
-                (name, description)
-                for name, description in re.findall(r"device `([^']+)' is (.+)", result.stdout)
-                if not name.startswith("v4l")
-            ]
+                return find_scanners()
+            except Exception as error:
+                if not startup:
+                    raise
+                return error
+
+        def report(text):
+            # At startup a broken Tk matters more than the scanner list, which the menu shows anyway.
+            self.status.configure(text=NO_XFT if startup and self.lacks_xft else text)
 
         def done(devices):
+            if isinstance(devices, Exception):
+                report("Could not look for scanners. Click Refresh scanners to see why.")
+                return
             if devices is None:
                 self.device_names = {}
                 self.device.configure(values=["SANE not installed"])
                 self.device.set("SANE not installed")
-                self.status.configure(text="Scanning requires SANE. Use Choose image… to work with existing images.")
-                self.dialog(
-                    "SANE required for scanning",
-                    "SANE required for scanning",
-                    "The scanimage command was not found. Install SANE to scan from this application.\n\n"
-                    f"{sane_install_help()}\n\n"
-                    "Alternatively, use Choose image… to load the front and back from existing images.\n\n"
-                    "After installing SANE, click Refresh scanners again.",
-                )
+                report("Scanning requires SANE. Use Choose image… to work with existing images.")
+                if not startup:
+                    self.dialog(
+                        "SANE required for scanning",
+                        "SANE required for scanning",
+                        "The scanimage command was not found. Install SANE to scan from this application.\n\n"
+                        f"{sane_install_help()}\n\n"
+                        "Alternatively, use Choose image… to load the front and back from existing images.\n\n"
+                        "After installing SANE, click Refresh scanners again.",
+                    )
                 return
-            previous = self.device.get()
+            previous = self.device_names.get(self.device.get())
             self.device_names = {
                 f"{index + 1}. {description}": name for index, (name, description) in enumerate(devices)
             }
-            values = list(self.device_names) or ["No scanner found"]
-            self.device.configure(values=values)
-            self.device.set(previous if previous in values else values[0])
-            self.status.configure(
-                text="Scanner list updated." if devices else "No scanner found. You can choose image files."
-            )
+            labels = {name: label for label, name in self.device_names.items()}
+            # The remembered scanner wins over the current selection, which may have been a fallback.
+            chosen = choose_scanner(devices, settings.load().get("device"), previous)
+            self.device.configure(values=list(self.device_names) or ["No scanner found"])
+            self.device.set(labels.get(chosen, "No scanner found"))
+            report("Scanner list updated." if devices else "No scanner found. You can choose image files.")
 
         self.run_task("Looking for scanners…", discover, done)
+
+    def choose_device(self, label):
+        if label in self.device_names:
+            settings.save(device=self.device_names[label])
 
     def scan_side(self, side):
         if self.busy:
