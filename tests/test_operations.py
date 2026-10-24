@@ -7,12 +7,35 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
-from idscanner.operations import ScanCancelled, choose_scanner, find_scanners, save_pdf_atomic, scan_side
+from idscanner.operations import (
+    ScanCancelled,
+    card_from_file,
+    choose_scanner,
+    find_scanners,
+    save_pdf_atomic,
+    scan_side,
+)
 
 
 class OperationsTests(unittest.TestCase):
+    def test_card_from_file_reports_whether_a_card_was_found(self):
+        with tempfile.TemporaryDirectory() as directory:
+            card = Path(directory) / "card.png"
+            image = Image.new("RGB", (1600, 1200), "white")
+            ImageDraw.Draw(image).rounded_rectangle((300, 300, 1156, 840), 30, fill="#2a4d8f")
+            image.save(card)
+            empty = Path(directory) / "empty.png"
+            Image.new("RGB", (800, 600), "white").save(empty)
+
+            side, found = card_from_file(card)
+            self.assertTrue(found)
+            self.assertAlmostEqual(side.width / side.height, 856 / 540, delta=0.02)
+            side, found = card_from_file(empty)
+            self.assertFalse(found)
+            self.assertEqual(side.size, (800, 600))
+
     def test_failed_export_preserves_existing_document(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "card.pdf"

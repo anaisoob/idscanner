@@ -1,4 +1,4 @@
-"""Bounded scanner operations and atomic document export."""
+"""Bounded scanner operations, card import and atomic document export."""
 
 import io
 import os
@@ -91,6 +91,16 @@ def scan_side(device: str, front: bool, cancel: Event, timeout: float = 180) -> 
         raise id2pdf.ScanError(error.decode(errors="replace").strip() or "Scanning failed.")
     with Image.open(io.BytesIO(output)) as image:
         return image.convert("RGB")
+
+
+def card_from_file(path: Path) -> tuple[Image.Image, bool]:
+    """The card cut out of an image file, and whether a card was found.
+
+    Without a card the whole image is returned, so the caller can warn about it.
+    """
+    image = id2pdf.open_image(Path(path))
+    cards = id2pdf.find_cards(image, None)
+    return (id2pdf.cut_out(image, cards[0]), True) if cards else (image, False)
 
 
 def save_pdf_atomic(page: Image.Image, output: Path) -> None:

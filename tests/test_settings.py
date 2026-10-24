@@ -34,6 +34,13 @@ class SettingsTests(unittest.TestCase):
                 self.path.write_text(content)
                 self.assertEqual(settings.theme(), "System")
 
+    def test_failed_save_keeps_old_settings(self):
+        settings.save(theme="Dark")
+        with patch("idscanner.settings.json.dumps", side_effect=OSError("disk full")):
+            settings.save(theme="Light")
+        self.assertEqual(settings.load(), {"theme": "Dark"})
+        self.assertEqual(list(self.path.parent.iterdir()), [self.path])
+
     def test_unwritable_location_is_ignored(self):
         with patch("idscanner.settings.settings_path", return_value=Path(os.devnull) / "settings.json"):
             settings.save(theme="Light")

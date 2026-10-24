@@ -13,7 +13,7 @@ import id2pdf
 from PIL import Image
 
 from . import settings
-from .operations import ScanCancelled, choose_scanner, find_scanners, save_pdf_atomic, scan_side
+from .operations import ScanCancelled, card_from_file, choose_scanner, find_scanners, save_pdf_atomic, scan_side
 from .sidebar import AutoScrollSidebar
 from .system_info import sane_install_help, tk_lacks_xft
 
@@ -24,8 +24,9 @@ looks again), place the front of the card face down on the glass, and close the 
 3. Check the preview and choose Save PDF…
 
 Either side can be scanned again or replaced independently.
-Use Choose image… for photos or scans already on disk. If the whole image appears
-instead of a cropped card, choose a clearer image or crop it before importing.
+Use Choose image… for photos or scans already on disk. If no card is found in the
+image, the whole image is added and the side is marked "card not found": choose a
+clearer image or crop it before importing.
 
 Print the PDF at 100% / actual size to keep the real card dimensions.
 No scanner listed? Install SANE and check that it appears in scanimage -L."""
@@ -37,6 +38,7 @@ All image processing happens locally on your computer.
 Built with id2pdf and CustomTkinter.
 License: GPL-3.0-or-later"""
 SEARCHING = "Looking for scanners…"
+WARNING = ("#b45309", "#fbbf24")
 SECONDARY = {"fg_color": "transparent", "border_width": 1, "text_color": ("gray20", "gray85")}
 NO_XFT = (
     "This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
@@ -54,6 +56,7 @@ class App(ctk.CTk):
         self.sides = [None, None]
         self.events = queue.Queue()
         self.busy = False
+        self.closable = False  # whether the running operation may be abandoned by closing the app
         self.controls = []
         self.scanner_controls = []
         self.discovery = None  # (cancel event, thread) while looking for scanners
@@ -98,6 +101,7 @@ class App(ctk.CTk):
             )
             label.grid(row=row, column=0, padx=24, pady=(16, 0), sticky="ew")
             self.side_labels.append(label)
+            self.label_color = label.cget("text_color")
             self.button(
                 panel,
                 "Scan " + ("front" if side == 0 else "back"),
@@ -273,16 +277,21 @@ class App(ctk.CTk):
         thread.start()
         return thread
 
-    def run_task(self, message, work, done):
-        """Run one operation at a time, with the controls disabled until it finishes."""
+    def run_task(self, message, work, done, closable=False):
+        """Run one operation at a time, with the controls disabled until it finishes.
+
+        A closable operation changes nothing on disk, so the app may be closed while it runs.
+        """
         if self.busy:
             return
         self.busy = True
+        self.closable = closable
         self.status.configure(text=message)
         self.update_controls()
 
         def finish(result, error):
             self.busy = False
+            self.closable = False
             self.scan_cancel = None
             self.update_controls()  # before any dialog, so the window behind it is no longer greyed out
             if isinstance(error, ScanCancelled):
@@ -383,7 +392,7 @@ class App(ctk.CTk):
         self.run_task(
             "Scanning and straightening the card…",
             lambda: scan_side(device, front=side == 0, cancel=cancel),
-            lambda image: self.set_side(side, image),
+            lambda image: self.set_side(side, image, found=True),
         )
 
     def cancel_scan(self):
@@ -404,15 +413,25 @@ class App(ctk.CTk):
         if filename:
             self.run_task(
                 "Opening and detecting the card…",
-                lambda: id2pdf.card_from_image(id2pdf.open_image(Path(filename))),
-                lambda image: self.set_side(side, image),
+                lambda: card_from_file(Path(filename)),
+                lambda result: self.set_side(side, *result),
+                closable=True,
             )
 
-    def set_side(self, side, image):
+    def set_side(self, side, image, found):
         self.sides[side] = image
         self.cached_page = None
-        self.side_labels[side].configure(text=f"{'FRONT' if side == 0 else 'BACK'} · Added")
-        self.status.configure(text="Side added. Check the preview before saving.")
+        name = "FRONT" if side == 0 else "BACK"
+        if found:
+            self.side_labels[side].configure(text=f"{name} · Added", text_color=self.label_color)
+            self.status.configure(text="Side added. Check the preview before saving.")
+        else:
+            # Without a card the whole image would be shrunk onto the page, background and all.
+            self.side_labels[side].configure(text=f"{name} · Added, card not found", text_color=WARNING)
+            self.status.configure(
+                text="No card found in this image, so the whole image was added. "
+                "Choose a clearer image or crop it to the card."
+            )
         self.render()
 
     def page(self):
@@ -466,13 +485,13 @@ class App(ctk.CTk):
         self.sides = [None, None]
         self.cached_page = None
         for side, label in enumerate(self.side_labels):
-            label.configure(text=f"{'FRONT' if side == 0 else 'BACK'} · Not added")
+            label.configure(text=f"{'FRONT' if side == 0 else 'BACK'} · Not added", text_color=self.label_color)
         self.render()
         self.status.configure(text="Ready")
         self.update_controls()
 
     def close(self):
-        if self.busy:
+        if self.busy and not self.closable:
             self.dialog(
                 "Operation in progress",
                 "Operation in progress",

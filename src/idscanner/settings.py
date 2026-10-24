@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 THEMES = ("System", "Light", "Dark")
@@ -29,11 +30,21 @@ def load() -> dict:
 
 def save(**changes) -> None:
     path = settings_path()
+    # Write a temporary file and swap it in, so an interrupted save keeps the old settings.
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(load() | changes, indent=2), encoding="utf-8")
+        fd, name = tempfile.mkstemp(prefix=".settings-", suffix=".json", dir=path.parent)
     except OSError:
-        pass  # not being able to remember a preference should never stop the app
+        return  # not being able to remember a preference should never stop the app
+    temporary = Path(name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(json.dumps(load() | changes, indent=2))
+        os.replace(temporary, path)
+    except OSError:
+        pass
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def theme() -> str:

@@ -78,12 +78,13 @@ Then start it with `idscanner` (or `idscanner-env/bin/idscanner`, on Windows
 4. Check the preview and click **Save PDF…**.
 
 Either side can be scanned again or replaced on its own. **Choose image…** loads a photo or
-scan from disk instead; if the whole image appears rather than just the card, use a clearer
-picture or crop it first.
+scan from disk instead. If no card is found in it, the whole image is added and the side is
+marked **card not found**; use a clearer picture or crop it first.
 
 Print the PDF at 100 % / "actual size", not "fit to page", so the card keeps its real size.
 
-**Cancel scan** stops a running scan; a scan also gives up after three minutes.
+**Cancel scan** stops a running scan; a scan also gives up after three minutes. The app can be
+closed while an image is being opened, but not during a scan or while a PDF is being saved.
 A failed save never overwrites an existing PDF. **Help** (F1) shows these steps in the app.
 **About** lets you choose a light or dark theme, or follow the system; the choice is remembered.
 
