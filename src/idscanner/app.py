@@ -8,7 +8,7 @@ import threading
 import tkinter
 from importlib.metadata import version
 from pathlib import Path
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 
 import customtkinter as ctk
 import id2pdf
@@ -37,6 +37,7 @@ All image processing happens locally on your computer.
 
 Built with id2pdf and CustomTkinter.
 License: GPL-3.0-or-later"""
+SECONDARY = {"fg_color": "transparent", "border_width": 1, "text_color": ("gray20", "gray85")}
 NO_XFT = (
     "This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
     "Install ID Scanner with your system's Python, for example with pipx."
@@ -130,9 +131,7 @@ class App(ctk.CTk):
                 width=72,
                 height=30,
                 corner_radius=8,
-                fg_color="transparent",
-                border_width=1,
-                text_color=("gray20", "gray85"),
+                **SECONDARY,
             ).grid(row=0, column=column, padx=(8, 0))
         self.preview = ctk.CTkLabel(
             view,
@@ -173,7 +172,8 @@ class App(ctk.CTk):
         image = ctk.CTkImage(Image.open(ICON), size=(96, 96))
         self.dialog("About ID Scanner", f"ID Scanner {version('idscanner')}", ABOUT, image)
 
-    def dialog(self, title, heading, text, image=None):
+    def dialog(self, title, heading, text, image=None, buttons=("Close",)):
+        """A modal dialog; returns the text of the button clicked, or None when dismissed."""
         window = ctk.CTkToplevel(self)
         window.title(title)
         window.resizable(False, False)
@@ -182,17 +182,36 @@ class App(ctk.CTk):
         if image is not None:
             ctk.CTkLabel(window, text="", image=image).pack(padx=32, pady=(28, 0))
         ctk.CTkLabel(window, text=heading, font=("", 20, "bold")).pack(padx=32, pady=(24 if image is None else 12, 0))
-        ctk.CTkLabel(window, text=text, justify="left", anchor="w").pack(padx=32, pady=(14, 0), fill="x")
-        close = ctk.CTkButton(window, text="Close", command=window.destroy, height=36, corner_radius=8)
-        close.pack(padx=32, pady=24, anchor="e")
+        ctk.CTkLabel(window, text=text, justify="left", anchor="w", wraplength=600).pack(
+            padx=32, pady=(14, 0), fill="x"
+        )
+        result = None
+
+        def choose(label):
+            nonlocal result
+            result = label
+            window.destroy()
+
+        row = ctk.CTkFrame(window, fg_color="transparent")
+        row.pack(padx=32, pady=24, anchor="e")
+        for column, label in enumerate(buttons):
+            # The last button is the default action, the others are secondary.
+            style = {} if column == len(buttons) - 1 else SECONDARY
+            button = ctk.CTkButton(
+                row, text=label, command=lambda label=label: choose(label), height=36, corner_radius=8, **style
+            )
+            button.grid(row=0, column=column, padx=(8 if column else 0, 0))
         window.bind("<Escape>", lambda event: window.destroy())
+        window.bind("<Return>", lambda event: choose(buttons[-1]))
         window.update_idletasks()
         x = self.winfo_rootx() + (self.winfo_width() - window.winfo_reqwidth()) // 2
         y = self.winfo_rooty() + (self.winfo_height() - window.winfo_reqheight()) // 3
         window.wm_geometry(f"+{max(0, x)}+{max(0, y)}")
         window.wait_visibility()
         window.grab_set()
-        close.focus_set()
+        button.focus_set()
+        self.wait_window(window)
+        return result
 
     def update_controls(self):
         for control in self.controls:
@@ -228,6 +247,7 @@ class App(ctk.CTk):
             self.scan_cancel = None
             self.progress.stop()
             self.progress.configure(progress_color=self.progress.cget("fg_color"))
+            self.update_controls()  # before any dialog, so the window behind it is no longer greyed out
             if error is None:
                 # An exception escaping here would stop polling and leave every later task hanging.
                 try:
@@ -238,7 +258,7 @@ class App(ctk.CTk):
                 self.status.configure(text="Scanning cancelled.")
             elif error is not None:
                 self.status.configure(text="Could not complete the operation. You can try again.")
-                messagebox.showerror("ID Scanner", str(error), parent=self)
+                self.dialog("ID Scanner", "Could not complete the operation", str(error))
             self.update_controls()
         self.after(100, self.poll)
 
@@ -262,13 +282,13 @@ class App(ctk.CTk):
                 self.device.configure(values=["SANE not installed"])
                 self.device.set("SANE not installed")
                 self.status.configure(text="Scanning requires SANE. Use Choose image… to work with existing images.")
-                messagebox.showinfo(
+                self.dialog(
+                    "SANE required for scanning",
                     "SANE required for scanning",
                     "The scanimage command was not found. Install SANE to scan from this application.\n\n"
                     f"{sane_install_help()}\n\n"
                     "Alternatively, use Choose image… to load the front and back from existing images.\n\n"
                     "After installing SANE, click Refresh scanners again.",
-                    parent=self,
                 )
                 return
             previous = self.device.get()
@@ -289,11 +309,7 @@ class App(ctk.CTk):
             return
         device = self.device_names.get(self.device.get())
         if not device:
-            messagebox.showinfo(
-                "Choose a scanner",
-                "Refresh the scanner list and choose a scanner first.",
-                parent=self,
-            )
+            self.dialog("Choose a scanner", "Choose a scanner", "Refresh the scanner list and choose a scanner first.")
             return
 
         cancel = threading.Event()
@@ -373,8 +389,12 @@ class App(ctk.CTk):
             )
 
     def clear(self):
-        if any(side is not None for side in self.sides) and not messagebox.askyesno(
-            "Clear document", "Remove both sides from this document?", parent=self
+        if (
+            any(side is not None for side in self.sides)
+            and self.dialog(
+                "Clear document", "Clear document", "Remove both sides from this document?", buttons=("Cancel", "Clear")
+            )
+            != "Clear"
         ):
             return
         self.sides = [None, None]
@@ -387,16 +407,21 @@ class App(ctk.CTk):
 
     def close(self):
         if self.busy:
-            messagebox.showinfo(
+            self.dialog(
+                "Operation in progress",
                 "Operation in progress",
                 "Please wait for the operation to finish before closing.",
-                parent=self,
             )
             return
-        if any(side is not None for side in self.sides) and not messagebox.askyesno(
-            "Close ID Scanner",
-            "Close this document? Make sure you have saved your PDF.",
-            parent=self,
+        if (
+            any(side is not None for side in self.sides)
+            and self.dialog(
+                "Close ID Scanner",
+                "Close this document?",
+                "Make sure you have saved your PDF.",
+                buttons=("Cancel", "Close"),
+            )
+            != "Close"
         ):
             return
         self.destroy()
