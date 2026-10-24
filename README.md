@@ -10,7 +10,7 @@ the card is found, straightened and cut out of the image.
 
 It works with any card of ID-1 size (85.6 × 54 mm): ID cards, driving licences, health
 insurance cards, residence permits. Everything happens on your computer; nothing is uploaded.
-The card detection comes from [id2pdf](../id2pdf).
+The card detection comes from [id2pdf](https://github.com/anaisoob/id2pdf).
 
 | | Scan with a scanner | Use existing images |
 |---|---|---|
@@ -19,8 +19,8 @@ The card detection comes from [id2pdf](../id2pdf).
 
 ## Install
 
-You need Python 3.11 or newer with Tk, and the `id2pdf` and `idscanner` folders next to
-each other in the same directory.
+You need Python 3.11 or newer with Tk. ID Scanner and id2pdf are installed straight from
+GitHub; they are not on PyPI yet.
 
 ### 1. Python and Tk
 
@@ -50,21 +50,27 @@ and works with image files; **Refresh scanners** explains what to install.
 
 ### 3. ID Scanner
 
-With [uv](https://docs.astral.sh/uv/), from the directory that holds both folders:
+With [uv](https://docs.astral.sh/uv/):
 
 ```
-uv tool install ./idscanner
+uv tool install --no-sources --with git+https://github.com/anaisoob/id2pdf.git \
+    git+https://github.com/anaisoob/idscanner.git
 ```
 
-On Linux, add `--python-preference only-system`: the Python builds that uv downloads come
-with a Tk that cannot draw smooth fonts or rounded corners there.
+`--no-sources` makes uv take id2pdf from GitHub instead of the `../id2pdf` folder used for
+development. On Linux, add `--python-preference only-system`: the Python builds that uv
+downloads come with a Tk that cannot draw smooth fonts or rounded corners there.
 
 Without uv, use a virtual environment:
 
 ```
-python3 -m venv idscanner-env                               # Windows: py -m venv idscanner-env
-idscanner-env/bin/pip install ./id2pdf ./idscanner          # Windows: idscanner-env\Scripts\pip
+python3 -m venv idscanner-env
+idscanner-env/bin/pip install git+https://github.com/anaisoob/id2pdf.git \
+    git+https://github.com/anaisoob/idscanner.git
 ```
+
+On Windows, use `py -m venv idscanner-env` and `idscanner-env\Scripts\pip`, on one line.
+pip needs Git to fetch the sources.
 
 Then start it with `idscanner` (or `idscanner-env/bin/idscanner`, on Windows
 `idscanner-env\Scripts\idscanner`).
@@ -90,7 +96,12 @@ A failed save never overwrites an existing PDF. **Help** (F1) shows these steps 
 
 ## Development
 
+uv takes id2pdf from a checkout next to this one, so changes to both can be tested together:
+
 ```
+git clone https://github.com/anaisoob/id2pdf.git
+git clone https://github.com/anaisoob/idscanner.git
+cd idscanner
 uv sync
 uv run pytest
 uv run ruff check . && uv run ruff format --check .

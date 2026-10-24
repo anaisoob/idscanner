@@ -1,13 +1,13 @@
 # Roadmap
 
 Goal: installing ID Scanner should take one command, or one click, especially on Linux.
-Today it needs a Python with Tk, SANE for scanning, and local copies of `id2pdf` and
-`idscanner` side by side.
+Today it needs a Python with Tk, SANE for scanning, and a long install command that
+fetches `id2pdf` and `idscanner` from GitHub.
 
-## 1. Public repositories
+## 1. Public repositories (done)
 
-Publish `id2pdf` and `idscanner` (Codeberg or GitHub). Everything below needs real URLs:
-the README still links to `../id2pdf`, and PyPI pages should point to the source.
+[id2pdf](https://github.com/anaisoob/id2pdf) and [idscanner](https://github.com/anaisoob/idscanner)
+are on GitHub, and the README installs from there.
 
 ## 2. PyPI
 
