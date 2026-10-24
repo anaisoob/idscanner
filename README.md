@@ -84,6 +84,7 @@ Print the PDF at 100 % / "actual size", not "fit to page", so the card keeps its
 
 **Cancel scan** stops a running scan; a scan also gives up after three minutes.
 A failed save never overwrites an existing PDF. **Help** (F1) shows these steps in the app.
+**About** lets you choose a light or dark theme, or follow the system; the choice is remembered.
 
 ## Development
 

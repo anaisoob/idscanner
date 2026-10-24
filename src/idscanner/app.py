@@ -14,6 +14,7 @@ import customtkinter as ctk
 import id2pdf
 from PIL import Image
 
+from . import settings
 from .operations import ScanCancelled, save_pdf_atomic, scan_side
 from .sidebar import AutoScrollSidebar
 from .system_info import sane_install_help, tk_lacks_xft
@@ -170,10 +171,25 @@ class App(ctk.CTk):
 
     def show_about(self):
         image = ctk.CTkImage(Image.open(ICON), size=(96, 96))
-        self.dialog("About ID Scanner", f"ID Scanner {version('idscanner')}", ABOUT, image)
+        self.dialog("About ID Scanner", f"ID Scanner {version('idscanner')}", ABOUT, image, extra=self.theme_picker)
 
-    def dialog(self, title, heading, text, image=None, buttons=("Close",)):
-        """A modal dialog; returns the text of the button clicked, or None when dismissed."""
+    def theme_picker(self, window):
+        row = ctk.CTkFrame(window, fg_color="transparent")
+        row.pack(padx=32, pady=(18, 0), fill="x")
+        ctk.CTkLabel(row, text="Theme").pack(side="left")
+        picker = ctk.CTkSegmentedButton(row, values=list(settings.THEMES), command=self.set_theme)
+        picker.set(settings.theme())
+        picker.pack(side="right")
+
+    def set_theme(self, theme):
+        ctk.set_appearance_mode(theme.lower())
+        settings.save(theme=theme)
+
+    def dialog(self, title, heading, text, image=None, buttons=("Close",), extra=None):
+        """A modal dialog; returns the text of the button clicked, or None when dismissed.
+
+        extra(window) can add widgets between the text and the buttons.
+        """
         window = ctk.CTkToplevel(self)
         window.title(title)
         window.resizable(False, False)
@@ -185,6 +201,8 @@ class App(ctk.CTk):
         ctk.CTkLabel(window, text=text, justify="left", anchor="w", wraplength=600).pack(
             padx=32, pady=(14, 0), fill="x"
         )
+        if extra is not None:
+            extra(window)
         result = None
 
         def choose(label):
@@ -428,7 +446,7 @@ class App(ctk.CTk):
 
 
 def main():
-    ctk.set_appearance_mode("system")
+    ctk.set_appearance_mode(settings.theme().lower())
     ctk.set_default_color_theme("blue")
     App().mainloop()
 
