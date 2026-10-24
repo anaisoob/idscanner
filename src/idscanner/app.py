@@ -36,6 +36,7 @@ All image processing happens locally on your computer.
 
 Built with id2pdf and CustomTkinter.
 License: GPL-3.0-or-later"""
+SEARCHING = "Looking for scanners…"
 SECONDARY = {"fg_color": "transparent", "border_width": 1, "text_color": ("gray20", "gray85")}
 NO_XFT = (
     "This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
@@ -54,6 +55,8 @@ class App(ctk.CTk):
         self.events = queue.Queue()
         self.busy = False
         self.controls = []
+        self.scanner_controls = []
+        self.discovery = None  # (cancel event, thread) while looking for scanners
         self.preview_image = None
         self.cached_page = None
         self.scan_cancel = None
@@ -84,8 +87,8 @@ class App(ctk.CTk):
         )
         self.device = ctk.CTkOptionMenu(panel, values=["No scanner selected"], command=self.choose_device)
         self.device.grid(row=3, column=0, padx=24, sticky="ew")
-        self.controls.append(self.device)
-        self.button(panel, "Refresh scanners", self.refresh, 4)
+        self.scanner_controls.append(self.device)
+        self.refresh_button = self.button(panel, "Refresh scanners", self.refresh, 4, self.scanner_controls)
         self.side_labels = []
         for side, row in ((0, 6), (1, 9)):
             label = ctk.CTkLabel(
@@ -100,6 +103,7 @@ class App(ctk.CTk):
                 "Scan " + ("front" if side == 0 else "back"),
                 lambda s=side: self.scan_side(s),
                 row + 1,
+                self.scanner_controls,
             )
             self.button(panel, "Choose image…", lambda s=side: self.load_side(s), row + 2)
         ctk.CTkLabel(panel, text="DOCUMENT", font=("", 12, "bold"), anchor="w").grid(
@@ -163,10 +167,10 @@ class App(ctk.CTk):
         self.after(100, self.poll)
         self.after(0, lambda: self.refresh(startup=True))
 
-    def button(self, parent, text, command, row):
+    def button(self, parent, text, command, row, controls=None):
         button = ctk.CTkButton(parent, text=text, command=command, height=36, corner_radius=8)
         button.grid(row=row, column=0, padx=24, pady=(8, 0), sticky="ew")
-        self.controls.append(button)
+        (self.controls if controls is None else controls).append(button)
         return button
 
     def set_windows_icon(self, window):
@@ -242,70 +246,96 @@ class App(ctk.CTk):
     def update_controls(self):
         for control in self.controls:
             control.configure(state="disabled" if self.busy else "normal")
+        # Scanner controls also wait for discovery; the rest of the app does not.
+        for control in self.scanner_controls:
+            control.configure(state="disabled" if self.busy or self.discovery else "normal")
+        self.refresh_button.configure(text=SEARCHING if self.discovery else "Refresh scanners")
         if self.busy or any(side is None for side in self.sides):
             self.save_button.configure(state="disabled")
         self.cancel_button.configure(state="normal" if self.busy and self.scan_cancel is not None else "disabled")
+        if self.busy or self.discovery:
+            self.progress.configure(progress_color=self.progress_color)
+            self.progress.start()
+        else:
+            self.progress.stop()
+            self.progress.configure(progress_color=self.progress.cget("fg_color"))
+
+    def in_background(self, work, finish):
+        """Run work() in a thread, then finish(result, error) in the Tk thread."""
+
+        def worker():
+            try:
+                self.events.put((finish, work(), None))
+            except Exception as error:
+                self.events.put((finish, None, error))
+
+        thread = threading.Thread(target=worker, daemon=True)
+        thread.start()
+        return thread
 
     def run_task(self, message, work, done):
+        """Run one operation at a time, with the controls disabled until it finishes."""
         if self.busy:
             return
         self.busy = True
         self.status.configure(text=message)
         self.update_controls()
-        self.progress.configure(progress_color=self.progress_color)
-        self.progress.start()
 
-        def worker():
-            try:
-                self.events.put((done, work(), None))
-            except Exception as error:
-                self.events.put((done, None, error))
-
-        threading.Thread(target=worker, daemon=True).start()
-
-    def poll(self):
-        try:
-            done, result, error = self.events.get_nowait()
-        except queue.Empty:
-            pass
-        else:
+        def finish(result, error):
             self.busy = False
             self.scan_cancel = None
-            self.progress.stop()
-            self.progress.configure(progress_color=self.progress.cget("fg_color"))
             self.update_controls()  # before any dialog, so the window behind it is no longer greyed out
-            if error is None:
-                # An exception escaping here would stop polling and leave every later task hanging.
-                try:
-                    done(result)
-                except Exception as exception:
-                    error = exception
             if isinstance(error, ScanCancelled):
                 self.status.configure(text="Scanning cancelled.")
             elif error is not None:
+                raise error
+            else:
+                done(result)
+                self.update_controls()
+
+        self.in_background(work, finish)
+
+    def poll(self):
+        try:
+            finish, result, error = self.events.get_nowait()
+        except queue.Empty:
+            pass
+        else:
+            # An exception escaping here would stop polling and leave every later task hanging.
+            try:
+                finish(result, error)
+            except Exception as exception:
                 self.status.configure(text="Could not complete the operation. You can try again.")
-                self.dialog("ID Scanner", "Could not complete the operation", str(error))
-            self.update_controls()
+                self.dialog("ID Scanner", "Could not complete the operation", str(exception))
+                self.update_controls()
         self.after(100, self.poll)
 
     def refresh(self, startup=False):
-        """Look for scanners; at startup, problems are only reported in the status line."""
+        """Look for scanners while the rest of the app stays usable.
 
-        def discover():
-            try:
-                return find_scanners()
-            except Exception as error:
-                if not startup:
-                    raise
-                return error
+        At startup, problems are only reported in the status line.
+        """
+        if self.busy or self.discovery:
+            return
+        cancel = threading.Event()
+        # At startup a broken Tk matters more than the search, which the Refresh button shows anyway.
+        if not (startup and self.lacks_xft):
+            self.status.configure(text=SEARCHING)
 
         def report(text):
-            # At startup a broken Tk matters more than the scanner list, which the menu shows anyway.
-            self.status.configure(text=NO_XFT if startup and self.lacks_xft else text)
+            # Leave the status alone if an operation started meanwhile has replaced it.
+            if self.status.cget("text") == SEARCHING:
+                self.status.configure(text=text)
 
-        def done(devices):
-            if isinstance(devices, Exception):
-                report("Could not look for scanners. Click Refresh scanners to see why.")
+        def finish(devices, error):
+            self.discovery = None
+            self.update_controls()
+            if error is not None:
+                if startup:
+                    report("Could not look for scanners. Click Refresh scanners to see why.")
+                else:
+                    report("Could not look for scanners. You can try again.")
+                    self.dialog("ID Scanner", "Could not look for scanners", str(error))
                 return
             if devices is None:
                 self.device_names = {}
@@ -333,14 +363,15 @@ class App(ctk.CTk):
             self.device.set(labels.get(chosen, "No scanner found"))
             report("Scanner list updated." if devices else "No scanner found. You can choose image files.")
 
-        self.run_task("Looking for scanners…", discover, done)
+        self.discovery = (cancel, self.in_background(lambda: find_scanners(cancel), finish))
+        self.update_controls()
 
     def choose_device(self, label):
         if label in self.device_names:
             settings.save(device=self.device_names[label])
 
     def scan_side(self, side):
-        if self.busy:
+        if self.busy or self.discovery:
             return
         device = self.device_names.get(self.device.get())
         if not device:
@@ -459,6 +490,11 @@ class App(ctk.CTk):
             != "Close"
         ):
             return
+        if self.discovery:
+            # Stop scanimage instead of leaving it behind, possibly holding a USB scanner.
+            cancel, thread = self.discovery
+            cancel.set()
+            thread.join(timeout=2)
         self.destroy()
 
 

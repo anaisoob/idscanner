@@ -57,38 +57,52 @@ class OperationsTests(unittest.TestCase):
                 self.assertIsNotNone(processes[0].poll())
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
+@unittest.skipUnless(os.name == "posix", "SANE runs on Linux")
 class ScannerDiscoveryTests(unittest.TestCase):
-    def scanimage(self, stdout="", returncode=0, stderr=""):
-        result = subprocess.CompletedProcess(["scanimage", "-L"], returncode, stdout, stderr)
-        return patch("idscanner.operations.subprocess.run", return_value=result)
+    def scanimage(self, script):
+        """Put a fake scanimage, running the given shell script, first on PATH."""
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        program = Path(directory.name) / "scanimage"
+        program.write_text(f"#!/bin/sh\n{script}\n")
+        program.chmod(0o755)
+        patcher = patch.dict(os.environ, {"PATH": f"{directory.name}{os.pathsep}{os.environ['PATH']}"})
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def test_lists_scanners_without_webcams(self):
-        output = (
-            "device `airscan:e0:Canon MF240' is a eSCL Canon MF240 ip=192.168.1.5\n"
-            "device `v4l:/dev/video0' is a Noname Integrated Camera virtual device\n"
-            "device `genesys:libusb:001:004' is a Canon LiDE 220 flatbed scanner\n"
+        self.scanimage(
+            """cat <<'EOF'
+device `airscan:e0:Canon MF240' is a eSCL Canon MF240 ip=192.168.1.5
+device `v4l:/dev/video0' is a Noname Integrated Camera virtual device
+device `genesys:libusb:001:004' is a Canon LiDE 220 flatbed scanner
+EOF"""
         )
-        with self.scanimage(output):
-            self.assertEqual(
-                find_scanners(),
-                [
-                    ("airscan:e0:Canon MF240", "a eSCL Canon MF240 ip=192.168.1.5"),
-                    ("genesys:libusb:001:004", "a Canon LiDE 220 flatbed scanner"),
-                ],
-            )
+        self.assertEqual(
+            find_scanners(threading.Event()),
+            [
+                ("airscan:e0:Canon MF240", "a eSCL Canon MF240 ip=192.168.1.5"),
+                ("genesys:libusb:001:004", "a Canon LiDE 220 flatbed scanner"),
+            ],
+        )
 
     def test_missing_sane_returns_none(self):
-        with patch("idscanner.operations.subprocess.run", side_effect=FileNotFoundError):
-            self.assertIsNone(find_scanners())
+        with patch.dict(os.environ, {"PATH": tempfile.gettempdir()}):
+            self.assertIsNone(find_scanners(threading.Event()))
 
     def test_failure_raises_scanimage_message(self):
-        with self.scanimage(returncode=1, stderr="scanimage: open of device failed\n"):
-            with self.assertRaisesRegex(RuntimeError, "open of device failed"):
-                find_scanners()
+        self.scanimage("echo 'scanimage: open of device failed' >&2; exit 1")
+        with self.assertRaisesRegex(RuntimeError, "open of device failed"):
+            find_scanners(threading.Event())
+
+    def test_cancel_and_timeout_stop_a_slow_search(self):
+        self.scanimage("sleep 60")
+        cancel = threading.Event()
+        threading.Timer(0.2, cancel.set).start()
+        with self.assertRaises(ScanCancelled):
+            find_scanners(cancel)
+        with self.assertRaises(TimeoutError):
+            find_scanners(threading.Event(), timeout=0.2)
 
     def test_choose_scanner_prefers_remembered_then_current_then_first(self):
         devices = [("a", "A"), ("b", "B"), ("c", "C")]
@@ -96,3 +110,7 @@ class ScannerDiscoveryTests(unittest.TestCase):
         self.assertEqual(choose_scanner(devices, "gone", "b"), "b")
         self.assertEqual(choose_scanner(devices, None, None), "a")
         self.assertIsNone(choose_scanner([], "a"))
+
+
+if __name__ == "__main__":
+    unittest.main()

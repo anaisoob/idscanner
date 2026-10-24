@@ -19,17 +19,53 @@ class ScanCancelled(Exception):
     pass
 
 
-def find_scanners(timeout: float = 30) -> list[tuple[str, str]] | None:
+def run_bounded(command: list[str], cancel: Event, timeout: float, timeout_message: str) -> tuple[int, bytes, bytes]:
+    """Run a command that can be cancelled; returns its exit code, stdout and stderr.
+
+    A separate session lets us stop the command and any children it starts.
+    """
+    if cancel.is_set():
+        raise ScanCancelled("Scanning cancelled.")
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True)
+    deadline = time.monotonic() + timeout
+    try:
+        while True:
+            if cancel.is_set():
+                raise ScanCancelled("Scanning cancelled.")
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(timeout_message)
+            try:
+                output, error = process.communicate(timeout=min(0.1, remaining))
+                break
+            except subprocess.TimeoutExpired:
+                continue
+        if cancel.is_set():
+            raise ScanCancelled("Scanning cancelled.")
+        return process.returncode, output, error
+    finally:
+        # Kill the whole session even if the command has already exited: a
+        # child may still be running or holding a pipe open.
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.communicate()
+
+
+def find_scanners(cancel: Event, timeout: float = 30) -> list[tuple[str, str]] | None:
     """SANE devices as (name, description) pairs, or None when SANE is not installed."""
     try:
-        result = subprocess.run(["scanimage", "-L"], capture_output=True, text=True, timeout=timeout)
+        returncode, output, error = run_bounded(
+            ["scanimage", "-L"], cancel, timeout, "Looking for scanners timed out. Check the scanner and try again."
+        )
     except FileNotFoundError:
         return None
-    if result.returncode:
-        raise RuntimeError(result.stderr.strip() or "Scanner discovery failed.")
+    if returncode:
+        raise RuntimeError(error.decode(errors="replace").strip() or "Scanner discovery failed.")
     return [
         (name, description)
-        for name, description in re.findall(r"device `([^']+)' is (.+)", result.stdout)
+        for name, description in re.findall(r"device `([^']+)' is (.+)", output.decode(errors="replace"))
         if not name.startswith("v4l")  # webcams
     ]
 
@@ -41,45 +77,20 @@ def choose_scanner(devices: list[tuple[str, str]], *preferred: str | None) -> st
 
 
 def scan_side(device: str, front: bool, cancel: Event, timeout: float = 180) -> Image.Image:
-    # SANE scanning is supported on Linux. A separate session lets us stop both
-    # the worker and its scanimage child, without changing id2pdf's globals.
+    # SANE scanning is supported on Linux. The worker runs in its own process so
+    # it can be stopped together with its scanimage child, without changing id2pdf's globals.
     if os.name != "posix":
         raise RuntimeError("Scanning requires Linux/SANE. You can still choose image files.")
-    if cancel.is_set():
-        raise ScanCancelled("Scanning cancelled.")
-    process = subprocess.Popen(
+    returncode, output, error = run_bounded(
         [sys.executable, "-m", "idscanner.scan_worker", device, "front" if front else "back"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        start_new_session=True,
+        cancel,
+        timeout,
+        "Scanning timed out. Check the scanner and try again.",
     )
-    deadline = time.monotonic() + timeout
-    try:
-        while True:
-            if cancel.is_set():
-                raise ScanCancelled("Scanning cancelled.")
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise TimeoutError("Scanning timed out. Check the scanner and try again.")
-            try:
-                output, error = process.communicate(timeout=min(0.1, remaining))
-                break
-            except subprocess.TimeoutExpired:
-                continue
-        if cancel.is_set():
-            raise ScanCancelled("Scanning cancelled.")
-        if process.returncode:
-            raise id2pdf.ScanError(error.decode(errors="replace").strip() or "Scanning failed.")
-        with Image.open(io.BytesIO(output)) as image:
-            return image.convert("RGB")
-    finally:
-        # Kill the whole session even if the worker has already exited: a
-        # scanner child may still be running or holding a pipe open.
-        try:
-            os.killpg(process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        process.communicate()
+    if returncode:
+        raise id2pdf.ScanError(error.decode(errors="replace").strip() or "Scanning failed.")
+    with Image.open(io.BytesIO(output)) as image:
+        return image.convert("RGB")
 
 
 def save_pdf_atomic(page: Image.Image, output: Path) -> None:
