@@ -11,14 +11,10 @@ are on GitHub, and the README installs from there.
 
 ## 2. PyPI
 
-Publish both projects, `id2pdf` first because `idscanner` depends on it. Both names are free.
-
-- Add `readme`, `urls`, `classifiers` and `keywords` to both `pyproject.toml` files.
-- Publish from CI with PyPI trusted publishing, triggered by a version tag.
-- Check that a wheel contains everything: id2pdf's translations, the icons.
-- README: `pipx install idscanner` as the main way. On Linux, prefer pipx over
-  `uv tool install`: pipx uses the system Python and its Tk, while uv may pick a Python
-  build whose Tk cannot draw smooth fonts or rounded corners (no Xft).
+Both projects are ready to publish: a version tag (`git tag v0.1.0 && git push origin main
+--tags`) runs `.github/workflows/publish.yml`, which tests, builds and uploads with PyPI
+trusted publishing. Publish `id2pdf` first, because `idscanner` depends on it. The README
+already installs with `pipx install idscanner`.
 
 pipx installs all Python dependencies (CustomTkinter, id2pdf, OpenCV, NumPy, Pillow) in an
 isolated environment. It cannot install system packages: Tk and, for scanning, SANE still

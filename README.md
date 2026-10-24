@@ -6,7 +6,7 @@ the card is found, straightened and cut out of the image.
 
 | Light | Dark |
 |---|---|
-| ![ID Scanner with both sides of a sample card on an A4 page](docs/screenshot-light.png) | ![The same window in dark mode](docs/screenshot-dark.png) |
+| ![ID Scanner with both sides of a sample card on an A4 page](https://raw.githubusercontent.com/anaisoob/idscanner/main/docs/screenshot-light.png) | ![The same window in dark mode](https://raw.githubusercontent.com/anaisoob/idscanner/main/docs/screenshot-dark.png) |
 
 It works with any card of ID-1 size (85.6 × 54 mm): ID cards, driving licences, health
 insurance cards, residence permits. Everything happens on your computer; nothing is uploaded.
@@ -19,8 +19,7 @@ The card detection comes from [id2pdf](https://github.com/anaisoob/id2pdf).
 
 ## Install
 
-You need Python 3.11 or newer with Tk. ID Scanner and id2pdf are installed straight from
-GitHub; they are not on PyPI yet.
+You need Python 3.11 or newer with Tk.
 
 ### 1. Python and Tk
 
@@ -50,27 +49,23 @@ and works with image files; **Refresh scanners** explains what to install.
 
 ### 3. ID Scanner
 
-With [uv](https://docs.astral.sh/uv/):
+With [pipx](https://pipx.pypa.io/), which keeps the app in its own environment:
 
 ```
-uv tool install --no-sources --with git+https://github.com/anaisoob/id2pdf.git \
-    git+https://github.com/anaisoob/idscanner.git
+pipx install idscanner
 ```
 
-`--no-sources` makes uv take id2pdf from GitHub instead of the `../id2pdf` folder used for
-development. On Linux, add `--python-preference only-system`: the Python builds that uv
-downloads come with a Tk that cannot draw smooth fonts or rounded corners there.
+pipx uses your system's Python and its Tk. [uv](https://docs.astral.sh/uv/) works too:
+`uv tool install idscanner`; on Linux add `--python-preference only-system`, because the
+Python builds that uv downloads come with a Tk that cannot draw smooth fonts or rounded
+corners there.
 
-Without uv, use a virtual environment:
+Without either, use a virtual environment:
 
 ```
-python3 -m venv idscanner-env
-idscanner-env/bin/pip install git+https://github.com/anaisoob/id2pdf.git \
-    git+https://github.com/anaisoob/idscanner.git
+python3 -m venv idscanner-env                     # Windows: py -m venv idscanner-env
+idscanner-env/bin/pip install idscanner           # Windows: idscanner-env\Scripts\pip
 ```
-
-On Windows, use `py -m venv idscanner-env` and `idscanner-env\Scripts\pip`, on one line.
-pip needs Git to fetch the sources.
 
 Then start it with `idscanner` (or `idscanner-env/bin/idscanner`, on Windows
 `idscanner-env\Scripts\idscanner`).

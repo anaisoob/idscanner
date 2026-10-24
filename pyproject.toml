@@ -1,10 +1,27 @@
 [project]
 name = "idscanner"
 version = "0.1.0"
-description = "A small desktop interface for id2pdf"
-requires-python = ">=3.11"
+description = "Scan both sides of an ID card onto one A4 PDF at its real size, in a small desktop app"
+authors = [{ name = "anaisoob", email = "anaisoob@tutamail.com" }]
+readme = "README.md"
 license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+keywords = ["scanner", "sane", "id card", "pdf", "photocopy", "gui"]
+classifiers = [
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Graphics :: Capture :: Scanners",
+]
 dependencies = ["customtkinter>=5.2", "id2pdf>=0.1.0"]
+
+[project.urls]
+Homepage = "https://github.com/anaisoob/idscanner"
+Changelog = "https://github.com/anaisoob/idscanner/blob/main/CHANGELOG.md"
+Issues = "https://github.com/anaisoob/idscanner/issues"
 
 [project.scripts]
 idscanner = "idscanner:main"
