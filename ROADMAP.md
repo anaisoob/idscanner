@@ -1,20 +1,19 @@
 # Roadmap
 
 Goal: installing ID Scanner should take one command, or one click, especially on Linux.
-Today it needs a Python with Tk, SANE for scanning, and a long install command that
-fetches `id2pdf` and `idscanner` from GitHub.
+Today it is `pipx install idscanner`, plus Tk and, for scanning, SANE from the distribution.
 
 ## 1. Public repositories (done)
 
 [id2pdf](https://github.com/anaisoob/id2pdf) and [idscanner](https://github.com/anaisoob/idscanner)
 are on GitHub, and the README installs from there.
 
-## 2. PyPI
+## 2. PyPI (done)
 
-Both projects are ready to publish: a version tag (`git tag v0.1.0 && git push origin main
---tags`) runs `.github/workflows/publish.yml`, which tests, builds and uploads with PyPI
-trusted publishing. Publish `id2pdf` first, because `idscanner` depends on it. The README
-already installs with `pipx install idscanner`.
+[id2pdf](https://pypi.org/project/id2pdf/) and [idscanner](https://pypi.org/project/idscanner/)
+0.1.0 are on PyPI. A version tag (`git tag vX.Y.Z && git push origin main --tags`) runs
+`.github/workflows/publish.yml`, which tests, builds and uploads with PyPI trusted publishing.
+Release `id2pdf` first when `idscanner` needs a new version of it.
 
 pipx installs all Python dependencies (CustomTkinter, id2pdf, OpenCV, NumPy, Pillow) in an
 isolated environment. It cannot install system packages: Tk and, for scanning, SANE still
