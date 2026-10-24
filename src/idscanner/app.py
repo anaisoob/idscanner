@@ -1,6 +1,7 @@
 """A small, local-only desktop frontend for id2pdf."""
 
 import queue
+import signal
 import sys
 import threading
 import tkinter
@@ -63,6 +64,7 @@ class App(ctk.CTk):
         self.preview_image = None
         self.cached_page = None
         self.scan_cancel = None
+        self.closing = False
         self.device_names = {}
         id2pdf.set_language("en")
         self.icon = tkinter.PhotoImage(file=ICON)
@@ -491,6 +493,16 @@ class App(ctk.CTk):
         self.update_controls()
 
     def close(self):
+        # The close button and Ctrl+C can both ask; one question at a time is enough.
+        if self.closing:
+            return
+        self.closing = True
+        try:
+            self.ask_and_close()
+        finally:
+            self.closing = False
+
+    def ask_and_close(self):
         if self.busy and not self.closable:
             self.dialog(
                 "Operation in progress",
@@ -520,7 +532,11 @@ class App(ctk.CTk):
 def main():
     ctk.set_appearance_mode(settings.theme().lower())
     ctk.set_default_color_theme("blue")
-    App().mainloop()
+    app = App()
+    # Tk would swallow KeyboardInterrupt in a callback and keep running. The handler runs at the
+    # next Python callback (poll() comes every 100 ms), so close from the event loop instead.
+    signal.signal(signal.SIGINT, lambda signum, frame: app.after_idle(app.close))
+    app.mainloop()
 
 
 if __name__ == "__main__":
