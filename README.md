@@ -78,9 +78,10 @@ Then start it with `idscanner` (or `idscanner-env/bin/idscanner`, on Windows
 3. Click **Scan front**, turn the card over, then click **Scan back**.
 4. Check the preview and click **Save PDF…**.
 
-Either side can be scanned again or replaced on its own. **Choose image…** loads a photo or
-scan from disk instead. If no card is found in it, the whole image is added and the side is
-marked **card not found**; use a clearer picture or crop it first.
+Either side can be scanned again or replaced on its own. **Choose image…** loads a phone photo
+or a scan from disk instead; a card photographed at a slant is straightened. If no card is
+found in it, the whole image is added and the side is marked **card not found**: take the photo
+on a plain background, away from printed pages, or crop it first.
 
 Print the PDF at 100 % / "actual size", not "fit to page", so the card keeps its real size.
 

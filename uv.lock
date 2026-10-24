@@ -39,7 +39,7 @@ wheels = [
 
 [[package]]
 name = "id2pdf"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "../id2pdf" }
 dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -65,7 +65,7 @@ dev = [
 
 [[package]]
 name = "idscanner"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "customtkinter" },

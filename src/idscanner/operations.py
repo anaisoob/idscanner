@@ -99,8 +99,8 @@ def card_from_file(path: Path) -> tuple[Image.Image, bool]:
     Without a card the whole image is returned, so the caller can warn about it.
     """
     image = id2pdf.open_image(Path(path))
-    cards = id2pdf.find_cards(image, None)
-    return (id2pdf.cut_out(image, cards[0]), True) if cards else (image, False)
+    corners = id2pdf.find_card_corners(image)
+    return (id2pdf.straighten(image, corners), True) if corners is not None else (image, False)
 
 
 def save_pdf_atomic(page: Image.Image, output: Path) -> None:

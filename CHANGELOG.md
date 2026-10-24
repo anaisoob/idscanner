@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
+- Choose image… finds the card in phone photos too, also taken at a slant or on a busy
+  background, and straightens it (id2pdf 0.2.0).
 - Ctrl+C in the terminal closes the app like its close button, asking first when a document
   is open, instead of printing a traceback and running on.
 

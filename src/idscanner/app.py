@@ -25,9 +25,10 @@ looks again), place the front of the card face down on the glass, and close the 
 3. Check the preview and choose Save PDF…
 
 Either side can be scanned again or replaced independently.
-Use Choose image… for photos or scans already on disk. If no card is found in the
-image, the whole image is added and the side is marked "card not found": choose a
-clearer image or crop it before importing.
+Use Choose image… for phone photos or scans already on disk; a card photographed at
+a slant is straightened. If no card is found in the image, the whole image is added
+and the side is marked "card not found": take the photo on a plain background, or
+crop it before importing.
 
 Print the PDF at 100% / actual size to keep the real card dimensions.
 No scanner listed? Install SANE and check that it appears in scanimage -L."""
