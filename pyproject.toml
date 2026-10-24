@@ -1,0 +1,27 @@
+[project]
+name = "idscanner"
+version = "0.1.0"
+description = "A small desktop interface for id2pdf"
+requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
+dependencies = ["customtkinter>=5.2", "id2pdf>=0.1.0"]
+
+[project.scripts]
+idscanner = "idscanner.app:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+# uv-managed Python builds Tk without Xft, which breaks CustomTkinter fonts and rounded corners on Linux
+python-preference = "only-system"
+
+[tool.uv.sources]
+id2pdf = { path = "../id2pdf", editable = true }
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
