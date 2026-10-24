@@ -142,7 +142,9 @@ class App(ctk.CTk):
         self.status.grid(row=2, column=0, columnspan=2, sticky="ew")
         self.progress = ctk.CTkProgressBar(view, mode="indeterminate", height=4)
         self.progress.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(8, 0))
-        self.progress.set(0)
+        # Indeterminate mode always draws its segment, so it gets the track colour while idle.
+        self.progress_color = self.progress.cget("progress_color")
+        self.progress.configure(progress_color=self.progress.cget("fg_color"))
         self.update_controls()
         self.after(100, self.poll)
 
@@ -198,6 +200,7 @@ class App(ctk.CTk):
         self.busy = True
         self.status.configure(text=message)
         self.update_controls()
+        self.progress.configure(progress_color=self.progress_color)
         self.progress.start()
 
         def worker():
@@ -217,7 +220,7 @@ class App(ctk.CTk):
             self.busy = False
             self.scan_cancel = None
             self.progress.stop()
-            self.progress.set(0)
+            self.progress.configure(progress_color=self.progress.cget("fg_color"))
             if error is None:
                 # An exception escaping here would stop polling and leave every later task hanging.
                 try:

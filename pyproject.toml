@@ -9,6 +9,12 @@ dependencies = ["customtkinter>=5.2", "id2pdf>=0.1.0"]
 [project.scripts]
 idscanner = "idscanner.app:main"
 
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
