@@ -7,7 +7,7 @@ license = "GPL-3.0-or-later"
 dependencies = ["customtkinter>=5.2", "id2pdf>=0.1.0"]
 
 [project.scripts]
-idscanner = "idscanner.app:main"
+idscanner = "idscanner:main"
 
 [dependency-groups]
 dev = [
