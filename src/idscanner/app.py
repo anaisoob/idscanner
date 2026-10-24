@@ -140,8 +140,17 @@ class App(ctk.CTk):
         )
         self.preview.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=18)
         self.preview.bind("<Configure>", lambda event: self.render())
-        self.status = ctk.CTkLabel(view, text="Ready", anchor="w", wraplength=520)
+        self.status = ctk.CTkLabel(view, text="Ready", anchor="w", justify="left", wraplength=520)
         self.status.grid(row=2, column=0, columnspan=2, sticky="ew")
+        # Wrap at the label's real width. CTkLabel.bind would go to its inner widgets, so bind the frame itself;
+        # wraplength is given unscaled, like every CustomTkinter size.
+        tkinter.Misc.bind(
+            self.status,
+            "<Configure>",
+            lambda event: self.status.configure(
+                wraplength=event.width / ctk.ScalingTracker.get_widget_scaling(self.status)
+            ),
+        )
         self.progress = ctk.CTkProgressBar(view, mode="indeterminate", height=4)
         self.progress.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(8, 0))
         # Indeterminate mode always draws its segment, so it gets the track colour while idle.
