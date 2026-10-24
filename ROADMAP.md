@@ -23,10 +23,7 @@ Publish both projects, `id2pdf` first because `idscanner` depends on it. Both na
 pipx installs all Python dependencies (CustomTkinter, id2pdf, OpenCV, NumPy, Pillow) in an
 isolated environment. It cannot install system packages: Tk and, for scanning, SANE still
 come from the distribution. When Tk is missing, `idscanner` already prints the command for
-the user's system instead of a traceback.
-
-Possible follow-up: warn at start when Tk has no Xft (`::tk::pkgconfig get fontsystem`),
-with a hint to use the system Python.
+the user's system instead of a traceback, and a Tk without Xft is reported in the status line.
 
 ## 3. AUR
 

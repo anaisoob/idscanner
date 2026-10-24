@@ -16,7 +16,7 @@ from PIL import Image
 
 from .operations import ScanCancelled, save_pdf_atomic, scan_side
 from .sidebar import AutoScrollSidebar
-from .system_info import sane_install_help
+from .system_info import sane_install_help, tk_lacks_xft
 
 ICON = Path(__file__).with_name("icon.png")
 HELP = """1. Click Refresh scanners and select a scanner, place the front of the card face down
@@ -37,6 +37,10 @@ All image processing happens locally on your computer.
 
 Built with id2pdf and CustomTkinter.
 License: GPL-3.0-or-later"""
+NO_XFT = (
+    "This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
+    "Install ID Scanner with your system's Python, for example with pipx."
+)
 
 
 class App(ctk.CTk):
@@ -145,6 +149,9 @@ class App(ctk.CTk):
         # Indeterminate mode always draws its segment, so it gets the track colour while idle.
         self.progress_color = self.progress.cget("progress_color")
         self.progress.configure(progress_color=self.progress.cget("fg_color"))
+        if tk_lacks_xft(self.tk):
+            print(f"ID Scanner: {NO_XFT}", file=sys.stderr)
+            self.status.configure(text=NO_XFT)
         self.update_controls()
         self.after(100, self.poll)
 

@@ -55,3 +55,11 @@ def tk_install_help() -> str:
     return linux_install_help(
         TK_COMMANDS, "Install the Tk package for Python (often called python3-tk) using your system's package manager."
     )
+
+
+def tk_lacks_xft(tk) -> bool:
+    """True for an X11 Tk built without Xft, which draws rough fonts and no rounded corners."""
+    try:
+        return tk.call("tk", "windowingsystem") == "x11" and tk.call("::tk::pkgconfig", "get", "fontsystem") != "xft"
+    except Exception:  # an unknown Tk: better no warning than a wrong one
+        return False

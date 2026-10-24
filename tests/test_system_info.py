@@ -1,7 +1,7 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
-from idscanner.system_info import sane_install_help, tk_install_help
+from idscanner.system_info import sane_install_help, tk_install_help, tk_lacks_xft
 
 
 class SystemInfoTests(unittest.TestCase):
@@ -48,3 +48,12 @@ class SystemInfoTests(unittest.TestCase):
             with self.subTest(system=system):
                 with patch("idscanner.system_info.platform.system", return_value=system):
                     self.assertIn(expected, tk_install_help())
+
+    def test_tk_lacks_xft(self):
+        def tk(windowing, fontsystem):
+            return Mock(call=lambda *args: windowing if args == ("tk", "windowingsystem") else fontsystem)
+
+        self.assertTrue(tk_lacks_xft(tk("x11", "x11")))
+        self.assertFalse(tk_lacks_xft(tk("x11", "xft")))
+        self.assertFalse(tk_lacks_xft(tk("win32", "")))
+        self.assertFalse(tk_lacks_xft(Mock(call=Mock(side_effect=RuntimeError))))
