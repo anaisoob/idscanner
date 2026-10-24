@@ -40,6 +40,7 @@ All image processing happens locally on your computer.
 Built with id2pdf and CustomTkinter.
 License: GPL-3.0-or-later"""
 SEARCHING = "Looking for scanners…"
+BLANK = Image.new("RGBA", (1, 1), (0, 0, 0, 0))  # shown instead of no image, see render()
 WARNING = ("#b45309", "#fbbf24")
 SECONDARY = {"fg_color": "transparent", "border_width": 1, "text_color": ("gray20", "gray85")}
 NO_XFT = (
@@ -445,11 +446,13 @@ class App(ctk.CTk):
 
     def render(self):
         if all(side is None for side in self.sides):
+            # CustomTkinter's image=None leaves the old picture on the Tk label; once it is
+            # garbage collected, Tk fails with 'image "pyimage…" doesn't exist'.
+            self.preview_image = ctk.CTkImage(light_image=BLANK, dark_image=BLANK, size=(1, 1))
             self.preview.configure(
-                image=None,
+                image=self.preview_image,
                 text="Add the front and back of your card\nto build your document.",
             )
-            self.preview_image = None
             return
         page = self.page().copy()
         width = max(100, self.preview.winfo_width() - 32)
