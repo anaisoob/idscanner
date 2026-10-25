@@ -1,7 +1,9 @@
 # Roadmap
 
 Goal: installing ID Scanner should take one command, or one click, especially on Linux.
-Today it is `pipx install idscanner`, plus Tk and, for scanning, SANE from the distribution.
+Today it is one terminal command per distribution: pipx, Tk and SANE from the distribution,
+then `pipx install idscanner` (see the README). Most distributions install none of the three
+by default; on Fedora, for example, a user first finds that pipx is missing, then Tk.
 
 ## 1. Public repositories (done)
 
@@ -30,11 +32,13 @@ The package also brings the entry in the app menu: a `.desktop` file and the ico
 `/usr/share/applications` and `/usr/share/icons`. A wheel from PyPI cannot put them there
 (pipx keeps everything in its own environment), so ID Scanner has no menu entry until then.
 
-## 4. Flatpak (only if needed)
+## 4. Flatpak (next after AUR)
 
-The best experience for people who never open a terminal: one click in GNOME Software or KDE
-Discover, with Python, Tk and SANE bundled. Worth doing once people outside the terminal
-audience actually use the app; it takes a few days plus Flathub review.
+The only way to one click: GNOME Software and KDE Discover show Flathub on
+Fedora (once third-party repositories are on), Ubuntu, Mint and most others, and on Fedora's
+atomic desktops (Silverblue, Kinoite, Bazzite) Flatpak is the usual way to install an app at
+all. One package covers all of them, with Python, Tk and SANE bundled and a menu entry.
+It takes a few days plus Flathub review.
 
 - Build `sane-backends` and `sane-airscan` inside the Flatpak, otherwise network and most
   newer USB scanners will not work. GNOME Document Scanner and NAPS2 on Flathub do the same.
@@ -73,5 +77,7 @@ improving only if people often photograph cards on papers:
 - **AppImage, Snap:** the same SANE bundling work as Flatpak, with fewer users reached.
 - **Debian, Fedora packages:** slow to get into the distributions; PyPI, AUR and Flatpak
   cover these users.
+- **Copr, PPA:** a package repository for one distribution still needs the terminal and its
+  own spec to maintain; Flatpak reaches the same users with one click.
 - **A Windows installer** (PyInstaller): only image import works on Windows, so
   `pipx install idscanner` is enough for now.

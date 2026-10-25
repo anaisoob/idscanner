@@ -19,46 +19,38 @@ The card detection comes from [id2pdf](https://github.com/anaisoob/id2pdf).
 
 ## Install
 
-You need Python 3.11 or newer with Tk.
+### Linux
 
-### 1. Python and Tk
-
-- **Windows:** install Python from [python.org](https://www.python.org/downloads/); Tk is included.
-- **macOS:** the [python.org](https://www.python.org/downloads/) installer includes Tk.
-  With Homebrew Python, also run `brew install python-tk`.
-- **Linux:** install your distribution's Tk package for Python:
-
-  | Distribution | Command |
-  |---|---|
-  | Debian, Ubuntu, Mint | `sudo apt install python3-tk` |
-  | Fedora | `sudo dnf install python3-tkinter` |
-  | Arch, Manjaro | `sudo pacman -S tk` |
-  | openSUSE | `sudo zypper install python3-tk` |
-
-### 2. SANE, for scanning (Linux only)
+One command installs pipx, Tk and SANE from your distribution, then ID Scanner:
 
 | Distribution | Command |
 |---|---|
-| Debian, Ubuntu, Mint | `sudo apt install sane-utils` |
-| Fedora | `sudo dnf install sane-backends` |
-| Arch, Manjaro | `sudo pacman -S sane` |
-| openSUSE | `sudo zypper install sane-backends` |
+| Fedora | `sudo dnf install pipx python3-tkinter sane-backends sane-airscan && pipx install idscanner` |
+| Debian, Ubuntu, Mint | `sudo apt install pipx python3-tk sane-utils sane-airscan && pipx install idscanner` |
+| Arch, Manjaro | `sudo pacman -S python-pipx tk sane sane-airscan && pipx install idscanner` |
+| openSUSE | `sudo zypper install python3-pipx python3-tk sane-backends sane-airscan && pipx install idscanner` |
 
-Check that your scanner shows up with `scanimage -L`. Without SANE the app still opens
-and works with image files; **Refresh scanners** explains what to install.
+If `idscanner` is not found afterwards, run `pipx ensurepath` and open a new terminal.
+SANE is only needed for scanning; sane-airscan adds network scanners and most newer USB
+scanners. Check that your scanner shows up with `scanimage -L`. Without SANE the app still
+opens and works with image files; **Refresh scanners** explains what to install.
 
-### 3. ID Scanner
+### Windows, macOS
 
-With [pipx](https://pipx.pypa.io/), which keeps the app in its own environment:
+Scanning is not supported there; image files work. You need Python 3.11 or newer with Tk:
 
-```
-pipx install idscanner
-```
+- **Windows:** install Python from [python.org](https://www.python.org/downloads/); Tk is included.
+  Then run `py -m pip install --user pipx`, `py -m pipx ensurepath` and, in a new terminal,
+  `pipx install idscanner`.
+- **macOS:** the [python.org](https://www.python.org/downloads/) installer includes Tk.
+  With Homebrew: `brew install python-tk pipx && pipx install idscanner`.
 
-pipx uses your system's Python and its Tk. [uv](https://docs.astral.sh/uv/) works too:
-`uv tool install idscanner`; on Linux add `--python-preference only-system`, because the
-Python builds that uv downloads come with a Tk that cannot draw smooth fonts or rounded
-corners there.
+### Other ways
+
+[pipx](https://pipx.pypa.io/) keeps the app in its own environment and uses your system's
+Python and its Tk. [uv](https://docs.astral.sh/uv/) works too: `uv tool install idscanner`;
+on Linux add `--python-preference only-system`, because the Python builds that uv downloads
+come with a Tk that cannot draw smooth fonts or rounded corners there.
 
 Without either, use a virtual environment:
 
