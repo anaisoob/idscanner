@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - Save… writes a JPEG or PNG image too, for forms that only accept images: A4 at 300 dpi,
   chosen with the file type or the name's extension.

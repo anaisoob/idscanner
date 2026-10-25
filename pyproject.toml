@@ -1,6 +1,6 @@
 [project]
 name = "idscanner"
-version = "0.3.0"
+version = "0.4.0"
 description = "Scan both sides of an ID card onto one A4 PDF at its real size, in a small desktop app"
 authors = [{ name = "anaisoob", email = "anaisoob@tutamail.com" }]
 readme = "README.md"
