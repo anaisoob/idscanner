@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - The app is in German, French, Italian, Spanish and Croatian too, following the system
-  language; About lets you choose another one (id2pdf 0.2.1).
+  language; About lets you choose another one, used from the next start (id2pdf 0.2.1).
+- The README gives one install command per Linux distribution, with pipx, Tk and SANE.
 
 ## 0.2.0
 

@@ -221,15 +221,20 @@ class App(ctk.CTk):
         row = ctk.CTkFrame(window, fg_color="transparent")
         row.pack(padx=32, pady=(12, 0), fill="x")
         ctk.CTkLabel(row, text=_("Language")).pack(side="left")
-        note = ctk.CTkLabel(window, text="", text_color="gray", justify="left", anchor="w", wraplength=600)
-        note.pack(padx=32, pady=(6, 0), fill="x")
 
         def choose(name):
             settings.save(language=languages[name])
-            # The window keeps its language until a restart; say so in the new one.
             language = languages[name] or i18n.system_language()
-            message = N_("The language changes when ID Scanner is started again.")
-            note.configure(text=i18n.translation(language).gettext(message) if language != i18n.current() else "")
+            if language != i18n.current():
+                # The window keeps its language until a restart; say so in the new one.
+                translate = i18n.translation(language).gettext
+                self.dialog(
+                    translate(N_("Restart ID Scanner")),
+                    translate(N_("Restart ID Scanner")),
+                    translate(N_("The language changes when ID Scanner is started again.")),
+                    buttons=(translate(N_("Close")),),
+                    parent=window,
+                )
 
         menu = ctk.CTkOptionMenu(row, values=list(languages), command=choose)
         menu.set(i18n.LANGUAGES.get(settings.language(), system))
@@ -239,16 +244,18 @@ class App(ctk.CTk):
         ctk.set_appearance_mode(theme.lower())
         settings.save(theme=theme)
 
-    def dialog(self, title, heading, text, image=None, buttons=None, extra=None):
+    def dialog(self, title, heading, text, image=None, buttons=None, extra=None, parent=None):
         """A modal dialog; returns the text of the button clicked, or None when dismissed.
 
-        extra(window) can add widgets between the text and the buttons.
+        extra(window) can add widgets between the text and the buttons. parent is another
+        dialog this one opens from; it gets its modal grab back afterwards.
         """
         buttons = buttons or (_("Close"),)
-        window = ctk.CTkToplevel(self)
+        owner = parent or self
+        window = ctk.CTkToplevel(owner)
         window.title(title)
         window.resizable(False, False)
-        window.transient(self)
+        window.transient(owner)
         self.set_windows_icon(window)
         if image is not None:
             ctk.CTkLabel(window, text="", image=image).pack(padx=32, pady=(28, 0))
@@ -277,13 +284,15 @@ class App(ctk.CTk):
         window.bind("<Escape>", lambda event: window.destroy())
         window.bind("<Return>", lambda event: choose(buttons[-1]))
         window.update_idletasks()
-        x = self.winfo_rootx() + (self.winfo_width() - window.winfo_reqwidth()) // 2
-        y = self.winfo_rooty() + (self.winfo_height() - window.winfo_reqheight()) // 3
+        x = owner.winfo_rootx() + (owner.winfo_width() - window.winfo_reqwidth()) // 2
+        y = owner.winfo_rooty() + (owner.winfo_height() - window.winfo_reqheight()) // 3
         window.wm_geometry(f"+{max(0, x)}+{max(0, y)}")
         window.wait_visibility()
         window.grab_set()
         button.focus_set()
         self.wait_window(window)
+        if parent is not None and parent.winfo_exists():
+            parent.grab_set()
         return result
 
     def update_controls(self):
