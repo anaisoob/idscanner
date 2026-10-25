@@ -15,7 +15,15 @@ from PIL import Image
 
 from . import i18n, settings
 from .i18n import N_, _
-from .operations import ScanCancelled, card_from_file, choose_scanner, find_scanners, save_pdf_atomic, scan_side
+from .operations import (
+    IMAGE_FORMATS,
+    ScanCancelled,
+    card_from_file,
+    choose_scanner,
+    find_scanners,
+    save_document_atomic,
+    scan_side,
+)
 from .sidebar import AutoScrollSidebar
 from .system_info import sane_install_help, tk_lacks_xft
 
@@ -23,7 +31,8 @@ ICON = Path(__file__).with_name("icon.png")
 HELP = N_("""1. Select your scanner (the list is filled when the app starts; Refresh scanners
 looks again), place the front of the card face down on the glass, and close the lid.
 2. Click Scan front, turn the card over, then click Scan back.
-3. Check the preview and choose Save PDF…
+3. Check the preview and choose Save…: a PDF, or a JPEG or PNG image for forms that
+only accept images.
 
 Either side can be scanned again or replaced independently.
 Use Choose image… for phone photos or scans already on disk; a card photographed at
@@ -31,10 +40,11 @@ a slant is straightened. If no card is found in the image, the whole image is ad
 and the side is marked "card not found": take the photo on a plain background, or
 crop it before importing.
 
-Print the PDF at 100% / actual size to keep the real card dimensions.
+Print the PDF at 100% / actual size to keep the real card dimensions; an image may be
+scaled to fit the page when printed.
 No scanner listed? Install SANE and check that it appears in scanimage -L.""")
 ABOUT = N_("""Scan both sides of an ID card and save them on one A4 page as a PDF
-at the card's real size.
+or an image, at the card's real size.
 
 All image processing happens locally on your computer.
 
@@ -129,7 +139,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(panel, text=_("DOCUMENT"), font=("", 12, "bold"), anchor="w").grid(
             row=12, column=0, padx=24, pady=(24, 0), sticky="ew"
         )
-        self.save_button = self.button(panel, _("Save PDF…"), self.save, 13)
+        self.save_button = self.button(panel, _("Save…"), self.save, 13)
         self.button(panel, _("Clear document"), self.clear, 14)
         self.cancel_button = ctk.CTkButton(
             panel, text=_("Cancel scan"), command=self.cancel_scan, state="disabled", height=36, corner_radius=8
@@ -512,20 +522,35 @@ class App(ctk.CTk):
         self.preview.configure(text="", image=self.preview_image)
 
     def save(self):
+        extensions = {_("PDF document"): ".pdf", _("JPEG image"): ".jpg", _("PNG image"): ".png"}
+        chosen_type = tkinter.StringVar(self)
         filename = filedialog.asksaveasfilename(
             parent=self,
-            title=_("Save A4 PDF"),
-            defaultextension=".pdf",
-            initialfile=_("id-card.pdf"),
-            filetypes=[(_("PDF document"), "*.pdf")],
+            title=_("Save A4 page"),
+            initialfile=_("id-card"),
+            filetypes=[(_("PDF document"), "*.pdf"), (_("JPEG image"), "*.jpg *.jpeg"), (_("PNG image"), "*.png")],
+            typevariable=chosen_type,
         )
-        if filename:
-            page = self.page()
-            self.run_task(
-                _("Saving PDF…"),
-                lambda: save_pdf_atomic(page, Path(filename)),
-                lambda result: self.status.configure(text=_("Saved: {path}").format(path=filename)),
-            )
+        if not filename:
+            return
+        path = Path(filename)
+        # The name decides the format; without a known extension, the chosen file type adds one.
+        if path.suffix.lower() not in (".pdf", *IMAGE_FORMATS):
+            path = path.with_name(path.name + extensions.get(chosen_type.get(), ".pdf"))
+            # The file dialog only asked about the name without it.
+            if path.exists() and self.dialog(
+                _("Replace file"),
+                _("Replace file"),
+                _("{name} already exists. Replace it?").format(name=path.name),
+                buttons=(_("Cancel"), _("Replace")),
+            ) != _("Replace"):
+                return
+        page = self.page()
+        self.run_task(
+            _("Saving…"),
+            lambda: save_document_atomic(page, path),
+            lambda result: self.status.configure(text=_("Saved: {path}").format(path=path)),
+        )
 
     def clear(self):
         if any(side is not None for side in self.sides) and self.dialog(
@@ -564,7 +589,7 @@ class App(ctk.CTk):
         if any(side is not None for side in self.sides) and self.dialog(
             _("Close ID Scanner"),
             _("Close this document?"),
-            _("Make sure you have saved your PDF."),
+            _("Make sure you have saved your document."),
             buttons=(_("Cancel"), _("Close")),
         ) != _("Close"):
             return

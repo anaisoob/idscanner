@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Save… writes a JPEG or PNG image too, for forms that only accept images: A4 at 300 dpi,
+  chosen with the file type or the name's extension.
+
 ## 0.3.0
 
 - The app is in German, French, Italian, Spanish and Croatian too, following the system

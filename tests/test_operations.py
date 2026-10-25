@@ -14,7 +14,7 @@ from idscanner.operations import (
     card_from_file,
     choose_scanner,
     find_scanners,
-    save_pdf_atomic,
+    save_document_atomic,
     scan_side,
 )
 
@@ -47,7 +47,7 @@ class OperationsTests(unittest.TestCase):
 
             with patch("idscanner.operations.id2pdf.save_pdf", side_effect=fail):
                 with self.assertRaises(OSError):
-                    save_pdf_atomic(Image.new("RGB", (10, 10)), output)
+                    save_document_atomic(Image.new("RGB", (10, 10)), output)
             self.assertEqual(output.read_bytes(), b"original PDF")
             self.assertEqual(list(Path(directory).iterdir()), [output])
 
@@ -55,9 +55,22 @@ class OperationsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "card.pdf"
             output.write_bytes(b"old")
-            save_pdf_atomic(Image.new("RGB", (10, 10)), output)
+            save_document_atomic(Image.new("RGB", (10, 10)), output)
             self.assertTrue(output.read_bytes().startswith(b"%PDF-"))
             self.assertEqual(list(Path(directory).iterdir()), [output])
+
+    def test_image_names_save_images_at_the_card_resolution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for name, image_format in (("card.jpg", "JPEG"), ("card.JPEG", "JPEG"), ("card.png", "PNG")):
+                with self.subTest(name=name):
+                    output = Path(directory) / name
+                    save_document_atomic(Image.new("RGB", (10, 10)), output)
+                    with Image.open(output) as image:
+                        self.assertEqual(image.format, image_format)
+                        self.assertEqual([round(value) for value in image.info["dpi"]], [300, 300])
+            self.assertEqual(
+                sorted(path.name for path in Path(directory).iterdir()), ["card.JPEG", "card.jpg", "card.png"]
+            )
 
     @unittest.skipUnless(os.name == "posix", "Linux/SANE process sessions")
     def test_timeout_and_cancel_reap_scanner_process(self):

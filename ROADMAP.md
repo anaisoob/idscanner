@@ -48,6 +48,15 @@ It takes a few days plus Flathub review.
 - Flathub needs a metainfo file, a `.desktop` file and the icon (`src/idscanner/icon.png`).
 - The runtime has to be updated about once a year.
 
+## Each side as its own image (when asked for)
+
+Some forms want the front and the back as two separate uploads, each a picture of the card
+alone rather than an A4 page. Today the user would cut the saved page up. A choice in the save
+dialog, or a second save action, could write `name-front.jpg` and `name-back.jpg` with each
+side cut out at its real size (300 dpi, so about 1011 x 638 pixels). Worth doing once someone
+asks for it; it needs a little interface, translated, and a decision on what happens when only
+one side is added.
+
 ## Card detection in photos (when needed)
 
 id2pdf finds a card in a photo by its straight sides, its proportions, the colour difference

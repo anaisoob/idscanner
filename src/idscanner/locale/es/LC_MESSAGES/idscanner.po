@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: idscanner\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 10:55+0100\n"
+"POT-Creation-Date: 2026-10-25 11:03+0100\n"
 "PO-Revision-Date: 2026-10-25 12:00+0200\n"
 "Last-Translator: anaisoob <anaisoob@tutamail.com>\n"
 "Language-Team: Spanish\n"
@@ -20,12 +20,13 @@ msgstr ""
 "ID Scanner necesita Tk, la biblioteca gráfica de Python, que no está "
 "instalada."
 
-#: src/idscanner/app.py:23
+#: src/idscanner/app.py:31
 msgid ""
 "1. Select your scanner (the list is filled when the app starts; Refresh scanners\n"
 "looks again), place the front of the card face down on the glass, and close the lid.\n"
 "2. Click Scan front, turn the card over, then click Scan back.\n"
-"3. Check the preview and choose Save PDF…\n"
+"3. Check the preview and choose Save…: a PDF, or a JPEG or PNG image for forms that\n"
+"only accept images.\n"
 "\n"
 "Either side can be scanned again or replaced independently.\n"
 "Use Choose image… for phone photos or scans already on disk; a card photographed at\n"
@@ -33,13 +34,15 @@ msgid ""
 "and the side is marked \"card not found\": take the photo on a plain background, or\n"
 "crop it before importing.\n"
 "\n"
-"Print the PDF at 100% / actual size to keep the real card dimensions.\n"
+"Print the PDF at 100% / actual size to keep the real card dimensions; an image may be\n"
+"scaled to fit the page when printed.\n"
 "No scanner listed? Install SANE and check that it appears in scanimage -L."
 msgstr ""
 "1. Elija su escáner (la lista se rellena al iniciar; Buscar escáneres vuelve a buscar),\n"
 "coloque el anverso de la tarjeta boca abajo sobre el cristal y cierre la tapa.\n"
 "2. Haga clic en Escanear anverso, dé la vuelta a la tarjeta y haga clic en Escanear reverso.\n"
-"3. Revise la vista previa y elija Guardar PDF…\n"
+"3. Revise la vista previa y elija Guardar…: un PDF, o una imagen JPEG o PNG para los\n"
+"formularios que solo aceptan imágenes.\n"
 "\n"
 "Cada cara se puede volver a escanear o sustituir por separado.\n"
 "Con Elegir imagen… puede usar fotos del móvil o escaneos que ya tenga; una tarjeta\n"
@@ -47,13 +50,14 @@ msgstr ""
 "se añade la imagen completa y la cara queda marcada como «sin tarjeta»: haga la foto\n"
 "sobre un fondo liso o recorte la imagen antes de importarla.\n"
 "\n"
-"Imprima el PDF al 100 % / tamaño real para que la tarjeta conserve sus medidas reales.\n"
+"Imprima el PDF al 100 % / tamaño real para que la tarjeta conserve sus medidas reales;\n"
+"una imagen puede ajustarse a la página al imprimirla.\n"
 "¿No aparece ningún escáner? Instale SANE y compruebe que aparece en scanimage -L."
 
-#: src/idscanner/app.py:36
+#: src/idscanner/app.py:46
 msgid ""
 "Scan both sides of an ID card and save them on one A4 page as a PDF\n"
-"at the card's real size.\n"
+"or an image, at the card's real size.\n"
 "\n"
 "All image processing happens locally on your computer.\n"
 "\n"
@@ -61,18 +65,18 @@ msgid ""
 "License: GPL-3.0-or-later"
 msgstr ""
 "Escanea las dos caras de un documento de identidad y las guarda en una página A4\n"
-"como PDF, al tamaño real de la tarjeta.\n"
+"como PDF o imagen, al tamaño real de la tarjeta.\n"
 "\n"
 "Todas las imágenes se procesan solo en su ordenador.\n"
 "\n"
 "Hecho con id2pdf y CustomTkinter.\n"
 "Licencia: GPL-3.0-or-later"
 
-#: src/idscanner/app.py:43
+#: src/idscanner/app.py:53
 msgid "Looking for scanners…"
 msgstr "Buscando escáneres…"
 
-#: src/idscanner/app.py:48
+#: src/idscanner/app.py:58
 msgid ""
 "This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
 "Install ID Scanner with your system's Python, for example with pipx."
@@ -81,103 +85,103 @@ msgstr ""
 "redondeadas (sin Xft). Instale ID Scanner con el Python de su sistema, por "
 "ejemplo con pipx."
 
-#: src/idscanner/app.py:52
+#: src/idscanner/app.py:62
 msgid "FRONT · Not added"
 msgstr "ANVERSO · No añadido"
 
-#: src/idscanner/app.py:53
+#: src/idscanner/app.py:63
 msgid "BACK · Not added"
 msgstr "REVERSO · No añadido"
 
-#: src/idscanner/app.py:54
+#: src/idscanner/app.py:64
 msgid "FRONT · Added"
 msgstr "ANVERSO · Añadido"
 
-#: src/idscanner/app.py:55
+#: src/idscanner/app.py:65
 msgid "BACK · Added"
 msgstr "REVERSO · Añadido"
 
-#: src/idscanner/app.py:56
+#: src/idscanner/app.py:66
 msgid "FRONT · Added, card not found"
 msgstr "ANVERSO · Añadido, sin tarjeta"
 
-#: src/idscanner/app.py:57
+#: src/idscanner/app.py:67
 msgid "BACK · Added, card not found"
 msgstr "REVERSO · Añadido, sin tarjeta"
 
-#: src/idscanner/app.py:59
+#: src/idscanner/app.py:69
 msgid "System"
 msgstr "Sistema"
 
-#: src/idscanner/app.py:59
+#: src/idscanner/app.py:69
 msgid "Light"
 msgstr "Claro"
 
-#: src/idscanner/app.py:59
+#: src/idscanner/app.py:69
 msgid "Dark"
 msgstr "Oscuro"
 
-#: src/idscanner/app.py:101
+#: src/idscanner/app.py:111
 msgid "Two sides. One A4 PDF."
 msgstr "Dos caras. Un PDF A4."
 
-#: src/idscanner/app.py:104
+#: src/idscanner/app.py:114
 msgid "SCANNER"
 msgstr "ESCÁNER"
 
-#: src/idscanner/app.py:107
+#: src/idscanner/app.py:117
 msgid "No scanner selected"
 msgstr "Ningún escáner elegido"
 
-#: src/idscanner/app.py:110 src/idscanner/app.py:304
+#: src/idscanner/app.py:120 src/idscanner/app.py:314
 msgid "Refresh scanners"
 msgstr "Buscar escáneres"
 
-#: src/idscanner/app.py:123
+#: src/idscanner/app.py:133
 msgid "Scan front"
 msgstr "Escanear anverso"
 
-#: src/idscanner/app.py:123
+#: src/idscanner/app.py:133
 msgid "Scan back"
 msgstr "Escanear reverso"
 
-#: src/idscanner/app.py:128
+#: src/idscanner/app.py:138
 msgid "Choose image…"
 msgstr "Elegir imagen…"
 
-#: src/idscanner/app.py:129
+#: src/idscanner/app.py:139
 msgid "DOCUMENT"
 msgstr "DOCUMENTO"
 
-#: src/idscanner/app.py:132
-msgid "Save PDF…"
-msgstr "Guardar PDF…"
+#: src/idscanner/app.py:142
+msgid "Save…"
+msgstr "Guardar…"
 
-#: src/idscanner/app.py:133 src/idscanner/app.py:532 src/idscanner/app.py:533
+#: src/idscanner/app.py:143 src/idscanner/app.py:557 src/idscanner/app.py:558
 msgid "Clear document"
 msgstr "Vaciar documento"
 
-#: src/idscanner/app.py:135
+#: src/idscanner/app.py:145
 msgid "Cancel scan"
 msgstr "Cancelar escaneo"
 
-#: src/idscanner/app.py:138
+#: src/idscanner/app.py:148
 msgid "Processed locally on your computer."
 msgstr "Se procesa solo en su ordenador."
 
-#: src/idscanner/app.py:146
+#: src/idscanner/app.py:156
 msgid "Document preview"
 msgstr "Vista previa del documento"
 
-#: src/idscanner/app.py:149
+#: src/idscanner/app.py:159
 msgid "Help"
 msgstr "Ayuda"
 
-#: src/idscanner/app.py:149
+#: src/idscanner/app.py:159
 msgid "About"
 msgstr "Acerca de"
 
-#: src/idscanner/app.py:161 src/idscanner/app.py:502
+#: src/idscanner/app.py:171 src/idscanner/app.py:512
 msgid ""
 "Add the front and back of your card\n"
 "to build your document."
@@ -185,88 +189,88 @@ msgstr ""
 "Añada el anverso y el reverso de su tarjeta\n"
 "para crear el documento."
 
-#: src/idscanner/app.py:167 src/idscanner/app.py:543
+#: src/idscanner/app.py:177 src/idscanner/app.py:568
 msgid "Ready"
 msgstr "Listo"
 
-#: src/idscanner/app.py:202
+#: src/idscanner/app.py:212
 msgid "ID Scanner Help"
 msgstr "Ayuda de ID Scanner"
 
-#: src/idscanner/app.py:202
+#: src/idscanner/app.py:212
 msgid "How to use ID Scanner"
 msgstr "Cómo usar ID Scanner"
 
-#: src/idscanner/app.py:207
+#: src/idscanner/app.py:217
 msgid "About ID Scanner"
 msgstr "Acerca de ID Scanner"
 
-#: src/idscanner/app.py:214
+#: src/idscanner/app.py:224
 msgid "Theme"
 msgstr "Tema"
 
-#: src/idscanner/app.py:219
+#: src/idscanner/app.py:229
 msgid "System language"
 msgstr "Idioma del sistema"
 
-#: src/idscanner/app.py:223
+#: src/idscanner/app.py:233
 msgid "Language"
 msgstr "Idioma"
 
-#: src/idscanner/app.py:232 src/idscanner/app.py:233
+#: src/idscanner/app.py:242 src/idscanner/app.py:243
 msgid "Restart ID Scanner"
 msgstr "Reiniciar ID Scanner"
 
-#: src/idscanner/app.py:234
+#: src/idscanner/app.py:244
 msgid "The language changes when ID Scanner is started again."
 msgstr "El idioma cambia la próxima vez que se inicie ID Scanner."
 
-#: src/idscanner/app.py:235 src/idscanner/app.py:253 src/idscanner/app.py:568
-#: src/idscanner/app.py:569
+#: src/idscanner/app.py:245 src/idscanner/app.py:263 src/idscanner/app.py:593
+#: src/idscanner/app.py:594
 msgid "Close"
 msgstr "Cerrar"
 
-#: src/idscanner/app.py:346
+#: src/idscanner/app.py:356
 msgid "Scanning cancelled."
 msgstr "Escaneo cancelado."
 
-#: src/idscanner/app.py:365
+#: src/idscanner/app.py:375
 msgid "Could not complete the operation. You can try again."
 msgstr "No se pudo completar la operación. Puede volver a intentarlo."
 
-#: src/idscanner/app.py:366
+#: src/idscanner/app.py:376
 msgid "Could not complete the operation"
 msgstr "No se pudo completar la operación"
 
-#: src/idscanner/app.py:392
+#: src/idscanner/app.py:402
 msgid "Could not look for scanners. Click Refresh scanners to see why."
 msgstr ""
 "No se pudieron buscar escáneres. Haga clic en Buscar escáneres para ver el "
 "motivo."
 
-#: src/idscanner/app.py:394
+#: src/idscanner/app.py:404
 msgid "Could not look for scanners. You can try again."
 msgstr "No se pudieron buscar escáneres. Puede volver a intentarlo."
 
-#: src/idscanner/app.py:395
+#: src/idscanner/app.py:405
 msgid "Could not look for scanners"
 msgstr "No se pudieron buscar escáneres"
 
-#: src/idscanner/app.py:399 src/idscanner/app.py:400
+#: src/idscanner/app.py:409 src/idscanner/app.py:410
 msgid "SANE not installed"
 msgstr "SANE no instalado"
 
-#: src/idscanner/app.py:401
+#: src/idscanner/app.py:411
 msgid "Scanning requires SANE. Use Choose image… to work with existing images."
 msgstr ""
 "Para escanear se necesita SANE. Use Elegir imagen… para trabajar con imágenes"
 " existentes."
 
-#: src/idscanner/app.py:404 src/idscanner/app.py:405
+#: src/idscanner/app.py:414 src/idscanner/app.py:415
 msgid "SANE required for scanning"
 msgstr "Se necesita SANE para escanear"
 
-#: src/idscanner/app.py:406
+#: src/idscanner/app.py:416
 msgid ""
 "The scanimage command was not found. Install SANE to scan from this "
 "application."
@@ -274,7 +278,7 @@ msgstr ""
 "No se encontró el comando scanimage. Instale SANE para escanear desde esta "
 "aplicación."
 
-#: src/idscanner/app.py:408
+#: src/idscanner/app.py:418
 msgid ""
 "Alternatively, use Choose image… to load the front and back from existing "
 "images."
@@ -282,59 +286,59 @@ msgstr ""
 "También puede usar Elegir imagen… para cargar el anverso y el reverso desde "
 "imágenes existentes."
 
-#: src/idscanner/app.py:410
+#: src/idscanner/app.py:420
 msgid "After installing SANE, click Refresh scanners again."
 msgstr "Después de instalar SANE, vuelva a hacer clic en Buscar escáneres."
 
-#: src/idscanner/app.py:420 src/idscanner/app.py:421
+#: src/idscanner/app.py:430 src/idscanner/app.py:431
 msgid "No scanner found"
 msgstr "No se encontró ningún escáner"
 
-#: src/idscanner/app.py:422
+#: src/idscanner/app.py:432
 msgid "Scanner list updated."
 msgstr "Lista de escáneres actualizada."
 
-#: src/idscanner/app.py:422
+#: src/idscanner/app.py:432
 msgid "No scanner found. You can choose image files."
 msgstr "No se encontró ningún escáner. Puede elegir archivos de imagen."
 
-#: src/idscanner/app.py:437
+#: src/idscanner/app.py:447
 msgid "Choose a scanner"
 msgstr "Elija un escáner"
 
-#: src/idscanner/app.py:437
+#: src/idscanner/app.py:447
 msgid "Refresh the scanner list and choose a scanner first."
 msgstr "Primero busque escáneres y elija uno."
 
-#: src/idscanner/app.py:444
+#: src/idscanner/app.py:454
 msgid "Scanning and straightening the card…"
 msgstr "Escaneando y enderezando la tarjeta…"
 
-#: src/idscanner/app.py:453
+#: src/idscanner/app.py:463
 msgid "Cancelling scan…"
 msgstr "Cancelando el escaneo…"
 
-#: src/idscanner/app.py:458
+#: src/idscanner/app.py:468
 msgid "Choose a card image"
 msgstr "Elegir una imagen de la tarjeta"
 
-#: src/idscanner/app.py:460
+#: src/idscanner/app.py:470
 msgid "Images"
 msgstr "Imágenes"
 
-#: src/idscanner/app.py:461
+#: src/idscanner/app.py:471
 msgid "All files"
 msgstr "Todos los archivos"
 
-#: src/idscanner/app.py:466
+#: src/idscanner/app.py:476
 msgid "Opening and detecting the card…"
 msgstr "Abriendo la imagen y buscando la tarjeta…"
 
-#: src/idscanner/app.py:477
+#: src/idscanner/app.py:487
 msgid "Side added. Check the preview before saving."
 msgstr "Cara añadida. Revise la vista previa antes de guardar."
 
-#: src/idscanner/app.py:483
+#: src/idscanner/app.py:493
 msgid ""
 "No card found in this image, so the whole image was added. Choose a clearer "
 "image or crop it to the card."
@@ -342,58 +346,79 @@ msgstr ""
 "No se encontró ninguna tarjeta en esta imagen, así que se añadió la imagen "
 "completa. Elija una imagen más clara o recórtela a la tarjeta."
 
-#: src/idscanner/app.py:517
-msgid "Save A4 PDF"
-msgstr "Guardar PDF A4"
-
-#: src/idscanner/app.py:519
-msgid "id-card.pdf"
-msgstr "documento-identidad.pdf"
-
-#: src/idscanner/app.py:520
+#: src/idscanner/app.py:525 src/idscanner/app.py:531
 msgid "PDF document"
 msgstr "Documento PDF"
 
-#: src/idscanner/app.py:525
-msgid "Saving PDF…"
-msgstr "Guardando el PDF…"
+#: src/idscanner/app.py:525 src/idscanner/app.py:531
+msgid "JPEG image"
+msgstr "Imagen JPEG"
 
-#: src/idscanner/app.py:527
+#: src/idscanner/app.py:525 src/idscanner/app.py:531
+msgid "PNG image"
+msgstr "Imagen PNG"
+
+#: src/idscanner/app.py:529
+msgid "Save A4 page"
+msgstr "Guardar página A4"
+
+#: src/idscanner/app.py:530
+msgid "id-card"
+msgstr "documento-identidad"
+
+#: src/idscanner/app.py:542 src/idscanner/app.py:543
+msgid "Replace file"
+msgstr "Reemplazar archivo"
+
+#: src/idscanner/app.py:544
+#, python-brace-format
+msgid "{name} already exists. Replace it?"
+msgstr "{name} ya existe. ¿Reemplazarlo?"
+
+#: src/idscanner/app.py:545 src/idscanner/app.py:560 src/idscanner/app.py:593
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/idscanner/app.py:545 src/idscanner/app.py:546
+msgid "Replace"
+msgstr "Reemplazar"
+
+#: src/idscanner/app.py:550
+msgid "Saving…"
+msgstr "Guardando…"
+
+#: src/idscanner/app.py:552
 #, python-brace-format
 msgid "Saved: {path}"
 msgstr "Guardado: {path}"
 
-#: src/idscanner/app.py:534
+#: src/idscanner/app.py:559
 msgid "Remove both sides from this document?"
 msgstr "¿Quitar las dos caras de este documento?"
 
-#: src/idscanner/app.py:535 src/idscanner/app.py:568
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: src/idscanner/app.py:535 src/idscanner/app.py:536
+#: src/idscanner/app.py:560 src/idscanner/app.py:561
 msgid "Clear"
 msgstr "Vaciar"
 
-#: src/idscanner/app.py:559 src/idscanner/app.py:560
+#: src/idscanner/app.py:584 src/idscanner/app.py:585
 msgid "Operation in progress"
 msgstr "Operación en curso"
 
-#: src/idscanner/app.py:561
+#: src/idscanner/app.py:586
 msgid "Please wait for the operation to finish before closing."
 msgstr "Espere a que termine la operación antes de cerrar."
 
-#: src/idscanner/app.py:565
+#: src/idscanner/app.py:590
 msgid "Close ID Scanner"
 msgstr "Cerrar ID Scanner"
 
-#: src/idscanner/app.py:566
+#: src/idscanner/app.py:591
 msgid "Close this document?"
 msgstr "¿Cerrar este documento?"
 
-#: src/idscanner/app.py:567
-msgid "Make sure you have saved your PDF."
-msgstr "Asegúrese de haber guardado el PDF."
+#: src/idscanner/app.py:592
+msgid "Make sure you have saved your document."
+msgstr "Asegúrese de haber guardado el documento."
 
 #: src/idscanner/operations.py:63
 msgid "Looking for scanners timed out. Check the scanner and try again."

@@ -1,7 +1,7 @@
 # ID Scanner
 
-Scan the front and back of an ID card and save both sides on one A4 page as a PDF,
-at the card's real size, like a photocopy. Photos or scans you already have work too:
+Scan the front and back of an ID card and save both sides on one A4 page as a PDF
+or an image, at the card's real size, like a photocopy. Photos or scans you already have work too:
 the card is found, straightened and cut out of the image.
 
 | Light | Dark |
@@ -68,18 +68,22 @@ Then start it with `idscanner` (or `idscanner-env/bin/idscanner`, on Windows
    click **Refresh scanners** after connecting or switching on a scanner.
 2. Put the card face down on the glass, anywhere and with its text upright, and close the lid.
 3. Click **Scan front**, turn the card over, then click **Scan back**.
-4. Check the preview and click **Save PDF…**.
+4. Check the preview and click **Save…**.
 
 Either side can be scanned again or replaced on its own. **Choose image…** loads a phone photo
 or a scan from disk instead; a card photographed at a slant is straightened. If no card is
 found in it, the whole image is added and the side is marked **card not found**: take the photo
 on a plain background, away from printed pages, or crop it first.
 
+**Save…** writes a PDF, or a JPEG or PNG image for forms that only accept images: choose the
+file type or end the name in `.jpg` or `.png`. Images are A4 at 300 dpi.
+
 Print the PDF at 100 % / "actual size", not "fit to page", so the card keeps its real size.
+An image may be scaled to fit the page when printed, so print the PDF.
 
 **Cancel scan** stops a running scan; a scan also gives up after three minutes. The app can be
-closed while an image is being opened, but not during a scan or while a PDF is being saved.
-A failed save never overwrites an existing PDF. **Help** (F1) shows these steps in the app.
+closed while an image is being opened, but not during a scan or while saving.
+A failed save never overwrites an existing file. **Help** (F1) shows these steps in the app.
 **About** lets you choose a light or dark theme, or follow the system; the choice is remembered.
 
 The app is in English, German, French, Italian, Spanish and Croatian and follows the system

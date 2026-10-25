@@ -106,14 +106,27 @@ def card_from_file(path: Path) -> tuple[Image.Image, bool]:
     return (id2pdf.straighten(image, corners), True) if corners is not None else (image, False)
 
 
-def save_pdf_atomic(page: Image.Image, output: Path) -> None:
+IMAGE_FORMATS = {".jpg": "JPEG", ".jpeg": "JPEG", ".png": "PNG"}
+
+
+def save_document_atomic(page: Image.Image, output: Path) -> None:
+    """The page as a JPEG or PNG image when the name ends so, otherwise as a PDF.
+
+    Images carry the resolution too, so the card keeps its real size where it is honoured.
+    """
     output = Path(output)
+    image_format = IMAGE_FORMATS.get(output.suffix.lower())
     output.parent.mkdir(parents=True, exist_ok=True)
-    fd, name = tempfile.mkstemp(prefix=".idscanner-", suffix=".pdf", dir=output.parent)
+    fd, name = tempfile.mkstemp(prefix=".idscanner-", suffix=output.suffix or ".pdf", dir=output.parent)
     temporary = Path(name)
     try:
         os.close(fd)
-        id2pdf.save_pdf([page], temporary, id2pdf.CARD_DPI)
+        if image_format == "JPEG":
+            page.save(temporary, "JPEG", dpi=(id2pdf.CARD_DPI, id2pdf.CARD_DPI), quality=90)
+        elif image_format == "PNG":
+            page.save(temporary, "PNG", dpi=(id2pdf.CARD_DPI, id2pdf.CARD_DPI))
+        else:
+            id2pdf.save_pdf([page], temporary, id2pdf.CARD_DPI)
         with temporary.open("rb") as stream:
             os.fsync(stream.fileno())
         os.replace(temporary, output)
