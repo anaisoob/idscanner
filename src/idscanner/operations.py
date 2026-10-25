@@ -14,6 +14,9 @@ from threading import Event
 import id2pdf
 from PIL import Image
 
+from . import i18n
+from .i18n import _
+
 
 class ScanCancelled(Exception):
     pass
@@ -57,12 +60,12 @@ def find_scanners(cancel: Event, timeout: float = 30) -> list[tuple[str, str]] |
     """SANE devices as (name, description) pairs, or None when SANE is not installed."""
     try:
         returncode, output, error = run_bounded(
-            ["scanimage", "-L"], cancel, timeout, "Looking for scanners timed out. Check the scanner and try again."
+            ["scanimage", "-L"], cancel, timeout, _("Looking for scanners timed out. Check the scanner and try again.")
         )
     except FileNotFoundError:
         return None
     if returncode:
-        raise RuntimeError(error.decode(errors="replace").strip() or "Scanner discovery failed.")
+        raise RuntimeError(error.decode(errors="replace").strip() or _("Scanner discovery failed."))
     return [
         (name, description)
         for name, description in re.findall(r"device `([^']+)' is (.+)", output.decode(errors="replace"))
@@ -72,7 +75,7 @@ def find_scanners(cancel: Event, timeout: float = 30) -> list[tuple[str, str]] |
 
 def choose_scanner(devices: list[tuple[str, str]], *preferred: str | None) -> str | None:
     """The first preferred device name that is present, otherwise the first device."""
-    names = [name for name, _ in devices]
+    names = [name for name, description in devices]
     return next((name for name in preferred if name in names), names[0] if names else None)
 
 
@@ -80,15 +83,15 @@ def scan_side(device: str, front: bool, cancel: Event, timeout: float = 180) -> 
     # SANE scanning is supported on Linux. The worker runs in its own process so
     # it can be stopped together with its scanimage child, without changing id2pdf's globals.
     if os.name != "posix":
-        raise RuntimeError("Scanning requires Linux/SANE. You can still choose image files.")
+        raise RuntimeError(_("Scanning requires Linux/SANE. You can still choose image files."))
     returncode, output, error = run_bounded(
-        [sys.executable, "-m", "idscanner.scan_worker", device, "front" if front else "back"],
+        [sys.executable, "-m", "idscanner.scan_worker", device, "front" if front else "back", i18n.current()],
         cancel,
         timeout,
-        "Scanning timed out. Check the scanner and try again.",
+        _("Scanning timed out. Check the scanner and try again."),
     )
     if returncode:
-        raise id2pdf.ScanError(error.decode(errors="replace").strip() or "Scanning failed.")
+        raise id2pdf.ScanError(error.decode(errors="replace").strip() or _("Scanning failed."))
     with Image.open(io.BytesIO(output)) as image:
         return image.convert("RGB")
 

@@ -1,0 +1,453 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: idscanner\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-25 10:40+0100\n"
+"PO-Revision-Date: 2026-10-25 12:00+0200\n"
+"Last-Translator: anaisoob <anaisoob@tutamail.com>\n"
+"Language-Team: Croatian\n"
+"Language: hr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/idscanner/__init__.py:18
+msgid ""
+"ID Scanner needs Tk, the graphical toolkit for Python, which is missing."
+msgstr ""
+"ID Scanner treba Tk, grafičko sučelje za Python, a ono nije instalirano."
+
+#: src/idscanner/app.py:23
+msgid ""
+"1. Select your scanner (the list is filled when the app starts; Refresh scanners\n"
+"looks again), place the front of the card face down on the glass, and close the lid.\n"
+"2. Click Scan front, turn the card over, then click Scan back.\n"
+"3. Check the preview and choose Save PDF…\n"
+"\n"
+"Either side can be scanned again or replaced independently.\n"
+"Use Choose image… for phone photos or scans already on disk; a card photographed at\n"
+"a slant is straightened. If no card is found in the image, the whole image is added\n"
+"and the side is marked \"card not found\": take the photo on a plain background, or\n"
+"crop it before importing.\n"
+"\n"
+"Print the PDF at 100% / actual size to keep the real card dimensions.\n"
+"No scanner listed? Install SANE and check that it appears in scanimage -L."
+msgstr ""
+"1. Odaberite skener (popis se popuni pri pokretanju; Potraži skenere traži ponovno),\n"
+"stavite karticu prednjom stranom prema staklu i zatvorite poklopac.\n"
+"2. Kliknite Skeniraj prednju, okrenite karticu, zatim kliknite Skeniraj stražnju.\n"
+"3. Provjerite pregled i odaberite Spremi PDF…\n"
+"\n"
+"Svaka strana može se ponovno skenirati ili zamijeniti zasebno.\n"
+"Odaberi sliku… učitava fotografije s mobitela ili postojeće skenove; kartica\n"
+"fotografirana ukoso se izravna. Ako na slici nije pronađena kartica, dodaje se cijela\n"
+"slika i strana je označena s „bez kartice“: fotografirajte karticu na jednobojnoj\n"
+"podlozi ili prije uvoza izrežite sliku.\n"
+"\n"
+"Ispišite PDF u 100 % / stvarnoj veličini da kartica zadrži svoje prave dimenzije.\n"
+"Nema skenera na popisu? Instalirajte SANE i provjerite pojavljuje li se u scanimage -L."
+
+#: src/idscanner/app.py:36
+msgid ""
+"Scan both sides of an ID card and save them on one A4 page as a PDF\n"
+"at the card's real size.\n"
+"\n"
+"All image processing happens locally on your computer.\n"
+"\n"
+"Built with id2pdf and CustomTkinter.\n"
+"License: GPL-3.0-or-later"
+msgstr ""
+"Skenira obje strane osobne iskaznice i sprema ih na jednu A4 stranicu kao PDF,\n"
+"u stvarnoj veličini kartice.\n"
+"\n"
+"Sve slike obrađuju se samo na vašem računalu.\n"
+"\n"
+"Izrađeno s id2pdf i CustomTkinter.\n"
+"Licenca: GPL-3.0-or-later"
+
+#: src/idscanner/app.py:43
+msgid "Looking for scanners…"
+msgstr "Tražim skenere…"
+
+#: src/idscanner/app.py:48
+msgid ""
+"This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
+"Install ID Scanner with your system's Python, for example with pipx."
+msgstr ""
+"Tk ovog Pythona ne može crtati glatka slova ni zaobljene kutove (nema Xft). "
+"Instalirajte ID Scanner sa sistemskim Pythonom, na primjer s pipx."
+
+#: src/idscanner/app.py:52
+msgid "FRONT · Not added"
+msgstr "PREDNJA · Nije dodana"
+
+#: src/idscanner/app.py:53
+msgid "BACK · Not added"
+msgstr "STRAŽNJA · Nije dodana"
+
+#: src/idscanner/app.py:54
+msgid "FRONT · Added"
+msgstr "PREDNJA · Dodana"
+
+#: src/idscanner/app.py:55
+msgid "BACK · Added"
+msgstr "STRAŽNJA · Dodana"
+
+#: src/idscanner/app.py:56
+msgid "FRONT · Added, card not found"
+msgstr "PREDNJA · Dodana, bez kartice"
+
+#: src/idscanner/app.py:57
+msgid "BACK · Added, card not found"
+msgstr "STRAŽNJA · Dodana, bez kartice"
+
+#: src/idscanner/app.py:59
+msgid "System"
+msgstr "Sustav"
+
+#: src/idscanner/app.py:59
+msgid "Light"
+msgstr "Svijetla"
+
+#: src/idscanner/app.py:59
+msgid "Dark"
+msgstr "Tamna"
+
+#: src/idscanner/app.py:101
+msgid "Two sides. One A4 PDF."
+msgstr "Dvije strane. Jedan A4 PDF."
+
+#: src/idscanner/app.py:104
+msgid "SCANNER"
+msgstr "SKENER"
+
+#: src/idscanner/app.py:107
+msgid "No scanner selected"
+msgstr "Skener nije odabran"
+
+#: src/idscanner/app.py:110 src/idscanner/app.py:295
+msgid "Refresh scanners"
+msgstr "Potraži skenere"
+
+#: src/idscanner/app.py:123
+msgid "Scan front"
+msgstr "Skeniraj prednju"
+
+#: src/idscanner/app.py:123
+msgid "Scan back"
+msgstr "Skeniraj stražnju"
+
+#: src/idscanner/app.py:128
+msgid "Choose image…"
+msgstr "Odaberi sliku…"
+
+#: src/idscanner/app.py:129
+msgid "DOCUMENT"
+msgstr "DOKUMENT"
+
+#: src/idscanner/app.py:132
+msgid "Save PDF…"
+msgstr "Spremi PDF…"
+
+#: src/idscanner/app.py:133 src/idscanner/app.py:523 src/idscanner/app.py:524
+msgid "Clear document"
+msgstr "Očisti dokument"
+
+#: src/idscanner/app.py:135
+msgid "Cancel scan"
+msgstr "Prekini skeniranje"
+
+#: src/idscanner/app.py:138
+msgid "Processed locally on your computer."
+msgstr "Obrađuje se samo na vašem računalu."
+
+#: src/idscanner/app.py:146
+msgid "Document preview"
+msgstr "Pregled dokumenta"
+
+#: src/idscanner/app.py:149
+msgid "Help"
+msgstr "Pomoć"
+
+#: src/idscanner/app.py:149
+msgid "About"
+msgstr "O programu"
+
+#: src/idscanner/app.py:161 src/idscanner/app.py:493
+msgid ""
+"Add the front and back of your card\n"
+"to build your document."
+msgstr ""
+"Dodajte prednju i stražnju stranu kartice\n"
+"da biste složili dokument."
+
+#: src/idscanner/app.py:167 src/idscanner/app.py:534
+msgid "Ready"
+msgstr "Spremno"
+
+#: src/idscanner/app.py:202
+msgid "ID Scanner Help"
+msgstr "Pomoć za ID Scanner"
+
+#: src/idscanner/app.py:202
+msgid "How to use ID Scanner"
+msgstr "Kako koristiti ID Scanner"
+
+#: src/idscanner/app.py:207
+msgid "About ID Scanner"
+msgstr "O programu ID Scanner"
+
+#: src/idscanner/app.py:214
+msgid "Theme"
+msgstr "Tema"
+
+#: src/idscanner/app.py:219
+msgid "System language"
+msgstr "Jezik sustava"
+
+#: src/idscanner/app.py:223
+msgid "Language"
+msgstr "Jezik"
+
+#: src/idscanner/app.py:231
+msgid "The language changes when ID Scanner is started again."
+msgstr "Jezik se mijenja pri sljedećem pokretanju programa ID Scanner."
+
+#: src/idscanner/app.py:247 src/idscanner/app.py:559 src/idscanner/app.py:560
+msgid "Close"
+msgstr "Zatvori"
+
+#: src/idscanner/app.py:337
+msgid "Scanning cancelled."
+msgstr "Skeniranje prekinuto."
+
+#: src/idscanner/app.py:356
+msgid "Could not complete the operation. You can try again."
+msgstr "Radnja nije dovršena. Možete pokušati ponovno."
+
+#: src/idscanner/app.py:357
+msgid "Could not complete the operation"
+msgstr "Radnja nije dovršena"
+
+#: src/idscanner/app.py:383
+msgid "Could not look for scanners. Click Refresh scanners to see why."
+msgstr ""
+"Traženje skenera nije uspjelo. Kliknite Potraži skenere da vidite zašto."
+
+#: src/idscanner/app.py:385
+msgid "Could not look for scanners. You can try again."
+msgstr "Traženje skenera nije uspjelo. Možete pokušati ponovno."
+
+#: src/idscanner/app.py:386
+msgid "Could not look for scanners"
+msgstr "Traženje skenera nije uspjelo"
+
+#: src/idscanner/app.py:390 src/idscanner/app.py:391
+msgid "SANE not installed"
+msgstr "SANE nije instaliran"
+
+#: src/idscanner/app.py:392
+msgid "Scanning requires SANE. Use Choose image… to work with existing images."
+msgstr ""
+"Za skeniranje treba SANE. S Odaberi sliku… možete koristiti postojeće slike."
+
+#: src/idscanner/app.py:395 src/idscanner/app.py:396
+msgid "SANE required for scanning"
+msgstr "Za skeniranje treba SANE"
+
+#: src/idscanner/app.py:397
+msgid ""
+"The scanimage command was not found. Install SANE to scan from this "
+"application."
+msgstr ""
+"Naredba scanimage nije pronađena. Instalirajte SANE da biste skenirali iz "
+"ovog programa."
+
+#: src/idscanner/app.py:399
+msgid ""
+"Alternatively, use Choose image… to load the front and back from existing "
+"images."
+msgstr ""
+"Umjesto toga, s Odaberi sliku… možete učitati prednju i stražnju stranu iz "
+"postojećih slika."
+
+#: src/idscanner/app.py:401
+msgid "After installing SANE, click Refresh scanners again."
+msgstr "Nakon instalacije SANE-a ponovno kliknite Potraži skenere."
+
+#: src/idscanner/app.py:411 src/idscanner/app.py:412
+msgid "No scanner found"
+msgstr "Skener nije pronađen"
+
+#: src/idscanner/app.py:413
+msgid "Scanner list updated."
+msgstr "Popis skenera osvježen."
+
+#: src/idscanner/app.py:413
+msgid "No scanner found. You can choose image files."
+msgstr "Skener nije pronađen. Možete odabrati slike."
+
+#: src/idscanner/app.py:428
+msgid "Choose a scanner"
+msgstr "Odaberite skener"
+
+#: src/idscanner/app.py:428
+msgid "Refresh the scanner list and choose a scanner first."
+msgstr "Najprije potražite skenere i odaberite jedan."
+
+#: src/idscanner/app.py:435
+msgid "Scanning and straightening the card…"
+msgstr "Skeniram i izravnavam karticu…"
+
+#: src/idscanner/app.py:444
+msgid "Cancelling scan…"
+msgstr "Prekidam skeniranje…"
+
+#: src/idscanner/app.py:449
+msgid "Choose a card image"
+msgstr "Odaberite sliku kartice"
+
+#: src/idscanner/app.py:451
+msgid "Images"
+msgstr "Slike"
+
+#: src/idscanner/app.py:452
+msgid "All files"
+msgstr "Sve datoteke"
+
+#: src/idscanner/app.py:457
+msgid "Opening and detecting the card…"
+msgstr "Otvaram sliku i tražim karticu…"
+
+#: src/idscanner/app.py:468
+msgid "Side added. Check the preview before saving."
+msgstr "Strana dodana. Provjerite pregled prije spremanja."
+
+#: src/idscanner/app.py:474
+msgid ""
+"No card found in this image, so the whole image was added. Choose a clearer "
+"image or crop it to the card."
+msgstr ""
+"Na ovoj slici nije pronađena kartica, pa je dodana cijela slika. Odaberite "
+"jasniju sliku ili je izrežite na karticu."
+
+#: src/idscanner/app.py:508
+msgid "Save A4 PDF"
+msgstr "Spremi A4 PDF"
+
+#: src/idscanner/app.py:510
+msgid "id-card.pdf"
+msgstr "osobna.pdf"
+
+#: src/idscanner/app.py:511
+msgid "PDF document"
+msgstr "PDF dokument"
+
+#: src/idscanner/app.py:516
+msgid "Saving PDF…"
+msgstr "Spremam PDF…"
+
+#: src/idscanner/app.py:518
+#, python-brace-format
+msgid "Saved: {path}"
+msgstr "Spremljeno: {path}"
+
+#: src/idscanner/app.py:525
+msgid "Remove both sides from this document?"
+msgstr "Ukloniti obje strane iz ovog dokumenta?"
+
+#: src/idscanner/app.py:526 src/idscanner/app.py:559
+msgid "Cancel"
+msgstr "Odustani"
+
+#: src/idscanner/app.py:526 src/idscanner/app.py:527
+msgid "Clear"
+msgstr "Očisti"
+
+#: src/idscanner/app.py:550 src/idscanner/app.py:551
+msgid "Operation in progress"
+msgstr "Radnja u tijeku"
+
+#: src/idscanner/app.py:552
+msgid "Please wait for the operation to finish before closing."
+msgstr "Pričekajte da radnja završi prije zatvaranja."
+
+#: src/idscanner/app.py:556
+msgid "Close ID Scanner"
+msgstr "Zatvori ID Scanner"
+
+#: src/idscanner/app.py:557
+msgid "Close this document?"
+msgstr "Zatvoriti ovaj dokument?"
+
+#: src/idscanner/app.py:558
+msgid "Make sure you have saved your PDF."
+msgstr "Provjerite jeste li spremili PDF."
+
+#: src/idscanner/operations.py:63
+msgid "Looking for scanners timed out. Check the scanner and try again."
+msgstr "Traženje skenera predugo traje. Provjerite skener i pokušajte ponovno."
+
+#: src/idscanner/operations.py:68
+msgid "Scanner discovery failed."
+msgstr "Traženje skenera nije uspjelo."
+
+#: src/idscanner/operations.py:86
+msgid "Scanning requires Linux/SANE. You can still choose image files."
+msgstr "Skeniranje zahtijeva Linux/SANE. I dalje možete odabrati slike."
+
+#: src/idscanner/operations.py:91
+msgid "Scanning timed out. Check the scanner and try again."
+msgstr "Skeniranje predugo traje. Provjerite skener i pokušajte ponovno."
+
+#: src/idscanner/operations.py:94
+msgid "Scanning failed."
+msgstr "Skeniranje nije uspjelo."
+
+#: src/idscanner/scan_worker.py:22
+msgid "Adjust the card and click Scan again."
+msgstr "Namjestite karticu i ponovno skenirajte."
+
+#: src/idscanner/system_info.py:38
+#, python-brace-format
+msgid "Detected system: {name}"
+msgstr "Prepoznat sustav: {name}"
+
+#: src/idscanner/system_info.py:40
+msgid "Run this command in a terminal:"
+msgstr "Pokrenite ovu naredbu u terminalu:"
+
+#: src/idscanner/system_info.py:46
+msgid "Scanner support in this application requires Linux and SANE."
+msgstr "Skeniranje u ovom programu zahtijeva Linux i SANE."
+
+#: src/idscanner/system_info.py:48
+msgid ""
+"Install the package providing scanimage using your system's package manager."
+msgstr ""
+"Instalirajte paket s naredbom scanimage upraviteljem paketa svog sustava."
+
+#: src/idscanner/system_info.py:55
+msgid ""
+"Reinstall Python from python.org and keep the \"tcl/tk and IDLE\" option "
+"selected."
+msgstr ""
+"Ponovno instalirajte Python s python.org i ostavite uključenu opciju „tcl/tk "
+"and IDLE“."
+
+#: src/idscanner/system_info.py:58
+msgid ""
+"Install Python from python.org, which includes Tk, or with Homebrew run:"
+msgstr ""
+"Instalirajte Python s python.org, koji uključuje Tk, ili s Homebrewom "
+"pokrenite:"
+
+#: src/idscanner/system_info.py:62
+msgid ""
+"Install the Tk package for Python (often called python3-tk) using your "
+"system's package manager."
+msgstr ""
+"Instalirajte paket Tk za Python (često se zove python3-tk) upraviteljem "
+"paketa svog sustava."

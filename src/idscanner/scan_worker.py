@@ -5,16 +5,21 @@ import sys
 
 import id2pdf
 
+from . import i18n
+from .i18n import _
+
 
 def main():
-    id2pdf.set_language("en")
+    # argv: device, "front" or "back", language
+    i18n.use(sys.argv[3])
+    id2pdf.set_language(sys.argv[3])
     prompts = 0
 
     def wait(message):
         nonlocal prompts
         prompts += 1
         if prompts > 1:
-            raise id2pdf.ScanError(message + "\nAdjust the card and click Scan again.")
+            raise id2pdf.ScanError(message + "\n" + _("Adjust the card and click Scan again."))
 
     try:
         with contextlib.redirect_stdout(sys.stderr):

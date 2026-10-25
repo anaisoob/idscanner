@@ -1,0 +1,465 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: idscanner\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-25 10:40+0100\n"
+"PO-Revision-Date: 2026-10-25 12:00+0200\n"
+"Last-Translator: anaisoob <anaisoob@tutamail.com>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: src/idscanner/__init__.py:18
+msgid ""
+"ID Scanner needs Tk, the graphical toolkit for Python, which is missing."
+msgstr ""
+"ID Scanner a besoin de Tk, la bibliothèque graphique de Python, qui est "
+"absente."
+
+#: src/idscanner/app.py:23
+msgid ""
+"1. Select your scanner (the list is filled when the app starts; Refresh scanners\n"
+"looks again), place the front of the card face down on the glass, and close the lid.\n"
+"2. Click Scan front, turn the card over, then click Scan back.\n"
+"3. Check the preview and choose Save PDF…\n"
+"\n"
+"Either side can be scanned again or replaced independently.\n"
+"Use Choose image… for phone photos or scans already on disk; a card photographed at\n"
+"a slant is straightened. If no card is found in the image, the whole image is added\n"
+"and the side is marked \"card not found\": take the photo on a plain background, or\n"
+"crop it before importing.\n"
+"\n"
+"Print the PDF at 100% / actual size to keep the real card dimensions.\n"
+"No scanner listed? Install SANE and check that it appears in scanimage -L."
+msgstr ""
+"1. Choisissez votre scanner (la liste est remplie au démarrage ; Rechercher les\n"
+"scanners la remplit à nouveau), posez le recto de la carte contre la vitre et fermez\n"
+"le capot.\n"
+"2. Cliquez sur Numériser le recto, retournez la carte, puis cliquez sur Numériser le verso.\n"
+"3. Vérifiez l'aperçu et choisissez Enregistrer le PDF…\n"
+"\n"
+"Chaque face peut être numérisée à nouveau ou remplacée séparément.\n"
+"Choisir une image… charge des photos de téléphone ou des numérisations existantes ;\n"
+"une carte photographiée de biais est redressée. Si aucune carte n'est trouvée dans\n"
+"l'image, l'image entière est ajoutée et la face est marquée « carte introuvable » :\n"
+"photographiez la carte sur un fond uni, ou recadrez l'image avant de l'importer.\n"
+"\n"
+"Imprimez le PDF à 100 % / taille réelle pour que la carte garde ses vraies dimensions.\n"
+"Aucun scanner dans la liste ? Installez SANE et vérifiez qu'il apparaît dans scanimage -L."
+
+#: src/idscanner/app.py:36
+msgid ""
+"Scan both sides of an ID card and save them on one A4 page as a PDF\n"
+"at the card's real size.\n"
+"\n"
+"All image processing happens locally on your computer.\n"
+"\n"
+"Built with id2pdf and CustomTkinter.\n"
+"License: GPL-3.0-or-later"
+msgstr ""
+"Numérise les deux faces d'une carte d'identité et les enregistre sur une page A4\n"
+"en PDF, à la taille réelle de la carte.\n"
+"\n"
+"Toutes les images sont traitées uniquement sur votre ordinateur.\n"
+"\n"
+"Réalisé avec id2pdf et CustomTkinter.\n"
+"Licence : GPL-3.0-or-later"
+
+#: src/idscanner/app.py:43
+msgid "Looking for scanners…"
+msgstr "Recherche des scanners…"
+
+#: src/idscanner/app.py:48
+msgid ""
+"This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
+"Install ID Scanner with your system's Python, for example with pipx."
+msgstr ""
+"Le Tk de ce Python ne peut pas afficher de polices lissées ni de coins "
+"arrondis (pas de Xft). Installez ID Scanner avec le Python de votre système, "
+"par exemple avec pipx."
+
+#: src/idscanner/app.py:52
+msgid "FRONT · Not added"
+msgstr "RECTO · Non ajouté"
+
+#: src/idscanner/app.py:53
+msgid "BACK · Not added"
+msgstr "VERSO · Non ajouté"
+
+#: src/idscanner/app.py:54
+msgid "FRONT · Added"
+msgstr "RECTO · Ajouté"
+
+#: src/idscanner/app.py:55
+msgid "BACK · Added"
+msgstr "VERSO · Ajouté"
+
+#: src/idscanner/app.py:56
+msgid "FRONT · Added, card not found"
+msgstr "RECTO · Ajouté, carte introuvable"
+
+#: src/idscanner/app.py:57
+msgid "BACK · Added, card not found"
+msgstr "VERSO · Ajouté, carte introuvable"
+
+#: src/idscanner/app.py:59
+msgid "System"
+msgstr "Système"
+
+#: src/idscanner/app.py:59
+msgid "Light"
+msgstr "Clair"
+
+#: src/idscanner/app.py:59
+msgid "Dark"
+msgstr "Sombre"
+
+#: src/idscanner/app.py:101
+msgid "Two sides. One A4 PDF."
+msgstr "Deux faces. Un PDF A4."
+
+#: src/idscanner/app.py:104
+msgid "SCANNER"
+msgstr "SCANNER"
+
+#: src/idscanner/app.py:107
+msgid "No scanner selected"
+msgstr "Aucun scanner choisi"
+
+#: src/idscanner/app.py:110 src/idscanner/app.py:295
+msgid "Refresh scanners"
+msgstr "Rechercher les scanners"
+
+#: src/idscanner/app.py:123
+msgid "Scan front"
+msgstr "Numériser le recto"
+
+#: src/idscanner/app.py:123
+msgid "Scan back"
+msgstr "Numériser le verso"
+
+#: src/idscanner/app.py:128
+msgid "Choose image…"
+msgstr "Choisir une image…"
+
+#: src/idscanner/app.py:129
+msgid "DOCUMENT"
+msgstr "DOCUMENT"
+
+#: src/idscanner/app.py:132
+msgid "Save PDF…"
+msgstr "Enregistrer le PDF…"
+
+#: src/idscanner/app.py:133 src/idscanner/app.py:523 src/idscanner/app.py:524
+msgid "Clear document"
+msgstr "Vider le document"
+
+#: src/idscanner/app.py:135
+msgid "Cancel scan"
+msgstr "Annuler la numérisation"
+
+#: src/idscanner/app.py:138
+msgid "Processed locally on your computer."
+msgstr "Traité uniquement sur votre ordinateur."
+
+#: src/idscanner/app.py:146
+msgid "Document preview"
+msgstr "Aperçu du document"
+
+#: src/idscanner/app.py:149
+msgid "Help"
+msgstr "Aide"
+
+#: src/idscanner/app.py:149
+msgid "About"
+msgstr "À propos"
+
+#: src/idscanner/app.py:161 src/idscanner/app.py:493
+msgid ""
+"Add the front and back of your card\n"
+"to build your document."
+msgstr ""
+"Ajoutez le recto et le verso de votre carte\n"
+"pour créer votre document."
+
+#: src/idscanner/app.py:167 src/idscanner/app.py:534
+msgid "Ready"
+msgstr "Prêt"
+
+#: src/idscanner/app.py:202
+msgid "ID Scanner Help"
+msgstr "Aide d'ID Scanner"
+
+#: src/idscanner/app.py:202
+msgid "How to use ID Scanner"
+msgstr "Comment utiliser ID Scanner"
+
+#: src/idscanner/app.py:207
+msgid "About ID Scanner"
+msgstr "À propos d'ID Scanner"
+
+#: src/idscanner/app.py:214
+msgid "Theme"
+msgstr "Thème"
+
+#: src/idscanner/app.py:219
+msgid "System language"
+msgstr "Langue du système"
+
+#: src/idscanner/app.py:223
+msgid "Language"
+msgstr "Langue"
+
+#: src/idscanner/app.py:231
+msgid "The language changes when ID Scanner is started again."
+msgstr "La langue change au prochain démarrage d'ID Scanner."
+
+#: src/idscanner/app.py:247 src/idscanner/app.py:559 src/idscanner/app.py:560
+msgid "Close"
+msgstr "Fermer"
+
+#: src/idscanner/app.py:337
+msgid "Scanning cancelled."
+msgstr "Numérisation annulée."
+
+#: src/idscanner/app.py:356
+msgid "Could not complete the operation. You can try again."
+msgstr "L'opération n'a pas pu aboutir. Vous pouvez réessayer."
+
+#: src/idscanner/app.py:357
+msgid "Could not complete the operation"
+msgstr "L'opération n'a pas pu aboutir"
+
+#: src/idscanner/app.py:383
+msgid "Could not look for scanners. Click Refresh scanners to see why."
+msgstr ""
+"Impossible de rechercher les scanners. Cliquez sur Rechercher les scanners "
+"pour en voir la raison."
+
+#: src/idscanner/app.py:385
+msgid "Could not look for scanners. You can try again."
+msgstr "Impossible de rechercher les scanners. Vous pouvez réessayer."
+
+#: src/idscanner/app.py:386
+msgid "Could not look for scanners"
+msgstr "Impossible de rechercher les scanners"
+
+#: src/idscanner/app.py:390 src/idscanner/app.py:391
+msgid "SANE not installed"
+msgstr "SANE n'est pas installé"
+
+#: src/idscanner/app.py:392
+msgid "Scanning requires SANE. Use Choose image… to work with existing images."
+msgstr ""
+"La numérisation nécessite SANE. Utilisez Choisir une image… pour des images "
+"existantes."
+
+#: src/idscanner/app.py:395 src/idscanner/app.py:396
+msgid "SANE required for scanning"
+msgstr "SANE est nécessaire pour numériser"
+
+#: src/idscanner/app.py:397
+msgid ""
+"The scanimage command was not found. Install SANE to scan from this "
+"application."
+msgstr ""
+"La commande scanimage est introuvable. Installez SANE pour numériser avec "
+"cette application."
+
+#: src/idscanner/app.py:399
+msgid ""
+"Alternatively, use Choose image… to load the front and back from existing "
+"images."
+msgstr ""
+"Vous pouvez aussi utiliser Choisir une image… pour charger le recto et le "
+"verso depuis des images existantes."
+
+#: src/idscanner/app.py:401
+msgid "After installing SANE, click Refresh scanners again."
+msgstr ""
+"Après avoir installé SANE, cliquez à nouveau sur Rechercher les scanners."
+
+#: src/idscanner/app.py:411 src/idscanner/app.py:412
+msgid "No scanner found"
+msgstr "Aucun scanner trouvé"
+
+#: src/idscanner/app.py:413
+msgid "Scanner list updated."
+msgstr "Liste des scanners mise à jour."
+
+#: src/idscanner/app.py:413
+msgid "No scanner found. You can choose image files."
+msgstr "Aucun scanner trouvé. Vous pouvez choisir des fichiers image."
+
+#: src/idscanner/app.py:428
+msgid "Choose a scanner"
+msgstr "Choisissez un scanner"
+
+#: src/idscanner/app.py:428
+msgid "Refresh the scanner list and choose a scanner first."
+msgstr "Recherchez d'abord les scanners et choisissez-en un."
+
+#: src/idscanner/app.py:435
+msgid "Scanning and straightening the card…"
+msgstr "Numérisation et redressement de la carte…"
+
+#: src/idscanner/app.py:444
+msgid "Cancelling scan…"
+msgstr "Annulation de la numérisation…"
+
+#: src/idscanner/app.py:449
+msgid "Choose a card image"
+msgstr "Choisir une image de la carte"
+
+#: src/idscanner/app.py:451
+msgid "Images"
+msgstr "Images"
+
+#: src/idscanner/app.py:452
+msgid "All files"
+msgstr "Tous les fichiers"
+
+#: src/idscanner/app.py:457
+msgid "Opening and detecting the card…"
+msgstr "Ouverture et recherche de la carte…"
+
+#: src/idscanner/app.py:468
+msgid "Side added. Check the preview before saving."
+msgstr "Face ajoutée. Vérifiez l'aperçu avant d'enregistrer."
+
+#: src/idscanner/app.py:474
+msgid ""
+"No card found in this image, so the whole image was added. Choose a clearer "
+"image or crop it to the card."
+msgstr ""
+"Aucune carte trouvée dans cette image, l'image entière a donc été ajoutée. "
+"Choisissez une image plus nette ou recadrez-la sur la carte."
+
+#: src/idscanner/app.py:508
+msgid "Save A4 PDF"
+msgstr "Enregistrer le PDF A4"
+
+#: src/idscanner/app.py:510
+msgid "id-card.pdf"
+msgstr "carte-identite.pdf"
+
+#: src/idscanner/app.py:511
+msgid "PDF document"
+msgstr "Document PDF"
+
+#: src/idscanner/app.py:516
+msgid "Saving PDF…"
+msgstr "Enregistrement du PDF…"
+
+#: src/idscanner/app.py:518
+#, python-brace-format
+msgid "Saved: {path}"
+msgstr "Enregistré : {path}"
+
+#: src/idscanner/app.py:525
+msgid "Remove both sides from this document?"
+msgstr "Retirer les deux faces de ce document ?"
+
+#: src/idscanner/app.py:526 src/idscanner/app.py:559
+msgid "Cancel"
+msgstr "Annuler"
+
+#: src/idscanner/app.py:526 src/idscanner/app.py:527
+msgid "Clear"
+msgstr "Vider"
+
+#: src/idscanner/app.py:550 src/idscanner/app.py:551
+msgid "Operation in progress"
+msgstr "Opération en cours"
+
+#: src/idscanner/app.py:552
+msgid "Please wait for the operation to finish before closing."
+msgstr "Veuillez attendre la fin de l'opération avant de fermer."
+
+#: src/idscanner/app.py:556
+msgid "Close ID Scanner"
+msgstr "Fermer ID Scanner"
+
+#: src/idscanner/app.py:557
+msgid "Close this document?"
+msgstr "Fermer ce document ?"
+
+#: src/idscanner/app.py:558
+msgid "Make sure you have saved your PDF."
+msgstr "Vérifiez que vous avez enregistré votre PDF."
+
+#: src/idscanner/operations.py:63
+msgid "Looking for scanners timed out. Check the scanner and try again."
+msgstr ""
+"La recherche des scanners a pris trop de temps. Vérifiez le scanner et "
+"réessayez."
+
+#: src/idscanner/operations.py:68
+msgid "Scanner discovery failed."
+msgstr "La recherche des scanners a échoué."
+
+#: src/idscanner/operations.py:86
+msgid "Scanning requires Linux/SANE. You can still choose image files."
+msgstr ""
+"La numérisation nécessite Linux/SANE. Vous pouvez toujours choisir des "
+"fichiers image."
+
+#: src/idscanner/operations.py:91
+msgid "Scanning timed out. Check the scanner and try again."
+msgstr ""
+"La numérisation a pris trop de temps. Vérifiez le scanner et réessayez."
+
+#: src/idscanner/operations.py:94
+msgid "Scanning failed."
+msgstr "La numérisation a échoué."
+
+#: src/idscanner/scan_worker.py:22
+msgid "Adjust the card and click Scan again."
+msgstr "Replacez la carte et numérisez à nouveau."
+
+#: src/idscanner/system_info.py:38
+#, python-brace-format
+msgid "Detected system: {name}"
+msgstr "Système détecté : {name}"
+
+#: src/idscanner/system_info.py:40
+msgid "Run this command in a terminal:"
+msgstr "Exécutez cette commande dans un terminal :"
+
+#: src/idscanner/system_info.py:46
+msgid "Scanner support in this application requires Linux and SANE."
+msgstr "La numérisation dans cette application nécessite Linux et SANE."
+
+#: src/idscanner/system_info.py:48
+msgid ""
+"Install the package providing scanimage using your system's package manager."
+msgstr ""
+"Installez le paquet qui fournit scanimage avec le gestionnaire de paquets de "
+"votre système."
+
+#: src/idscanner/system_info.py:55
+msgid ""
+"Reinstall Python from python.org and keep the \"tcl/tk and IDLE\" option "
+"selected."
+msgstr ""
+"Réinstallez Python depuis python.org en gardant l'option « tcl/tk and IDLE » "
+"cochée."
+
+#: src/idscanner/system_info.py:58
+msgid ""
+"Install Python from python.org, which includes Tk, or with Homebrew run:"
+msgstr ""
+"Installez Python depuis python.org, qui inclut Tk, ou avec Homebrew exécutez "
+":"
+
+#: src/idscanner/system_info.py:62
+msgid ""
+"Install the Tk package for Python (often called python3-tk) using your "
+"system's package manager."
+msgstr ""
+"Installez le paquet Tk pour Python (souvent appelé python3-tk) avec le "
+"gestionnaire de paquets de votre système."

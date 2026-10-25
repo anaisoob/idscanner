@@ -82,6 +82,9 @@ closed while an image is being opened, but not during a scan or while a PDF is b
 A failed save never overwrites an existing PDF. **Help** (F1) shows these steps in the app.
 **About** lets you choose a light or dark theme, or follow the system; the choice is remembered.
 
+The app is in English, German, French, Italian, Spanish and Croatian and follows the system
+language; **About** lets you choose another one, which is used from the next start.
+
 ## Development
 
 uv takes id2pdf from a checkout next to this one, so changes to both can be tested together:
@@ -97,6 +100,11 @@ uv run ruff check . && uv run ruff format --check .
 
 `src/idscanner/icon.png` and `icon.ico` are drawn by `tools/make_icon.py`;
 run `uv run python tools/make_icon.py` after changing it.
+
+Translations are in `src/idscanner/locale/<language>/LC_MESSAGES/idscanner.po`; run
+`./tools/update_translations.sh` (needs gettext) after changing a message. A new language also
+goes into `LANGUAGES` in `src/idscanner/i18n.py`, and into id2pdf, whose scanning messages the
+app shows.
 
 ## License
 

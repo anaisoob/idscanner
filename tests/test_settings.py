@@ -34,6 +34,13 @@ class SettingsTests(unittest.TestCase):
                 self.path.write_text(content)
                 self.assertEqual(settings.theme(), "System")
 
+    def test_language_is_kept_or_follows_the_system(self):
+        self.assertIsNone(settings.language())
+        settings.save(language="de")
+        self.assertEqual(settings.language(), "de")
+        settings.save(language="xx")
+        self.assertIsNone(settings.language())
+
     def test_failed_save_keeps_old_settings(self):
         settings.save(theme="Dark")
         with patch("idscanner.settings.json.dumps", side_effect=OSError("disk full")):

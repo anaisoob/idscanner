@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The app is in German, French, Italian, Spanish and Croatian too, following the system
+  language; About lets you choose another one (id2pdf 0.2.1).
+
 ## 0.2.0
 
 - Choose image… finds the card in phone photos too, also taken at a slant or on a busy

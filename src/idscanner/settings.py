@@ -6,6 +6,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .i18n import LANGUAGES
+
 THEMES = ("System", "Light", "Dark")
 
 
@@ -50,3 +52,9 @@ def save(**changes) -> None:
 def theme() -> str:
     value = load().get("theme")
     return value if value in THEMES else "System"
+
+
+def language() -> str | None:
+    """The language chosen in About, or None to follow the system."""
+    value = load().get("language")
+    return value if value in LANGUAGES else None

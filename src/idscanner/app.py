@@ -13,13 +13,14 @@ import customtkinter as ctk
 import id2pdf
 from PIL import Image
 
-from . import settings
+from . import i18n, settings
+from .i18n import N_, _
 from .operations import ScanCancelled, card_from_file, choose_scanner, find_scanners, save_pdf_atomic, scan_side
 from .sidebar import AutoScrollSidebar
 from .system_info import sane_install_help, tk_lacks_xft
 
 ICON = Path(__file__).with_name("icon.png")
-HELP = """1. Select your scanner (the list is filled when the app starts; Refresh scanners
+HELP = N_("""1. Select your scanner (the list is filled when the app starts; Refresh scanners
 looks again), place the front of the card face down on the glass, and close the lid.
 2. Click Scan front, turn the card over, then click Scan back.
 3. Check the preview and choose Save PDF…
@@ -31,22 +32,31 @@ and the side is marked "card not found": take the photo on a plain background, o
 crop it before importing.
 
 Print the PDF at 100% / actual size to keep the real card dimensions.
-No scanner listed? Install SANE and check that it appears in scanimage -L."""
-ABOUT = """Scan both sides of an ID card and save them on one A4 page as a PDF
+No scanner listed? Install SANE and check that it appears in scanimage -L.""")
+ABOUT = N_("""Scan both sides of an ID card and save them on one A4 page as a PDF
 at the card's real size.
 
 All image processing happens locally on your computer.
 
 Built with id2pdf and CustomTkinter.
-License: GPL-3.0-or-later"""
-SEARCHING = "Looking for scanners…"
+License: GPL-3.0-or-later""")
+SEARCHING = N_("Looking for scanners…")
 BLANK = Image.new("RGBA", (1, 1), (0, 0, 0, 0))  # shown instead of no image, see render()
 WARNING = ("#b45309", "#fbbf24")
 SECONDARY = {"fg_color": "transparent", "border_width": 1, "text_color": ("gray20", "gray85")}
-NO_XFT = (
+NO_XFT = N_(
     "This Python's Tk cannot draw smooth fonts or rounded corners (no Xft). "
     "Install ID Scanner with your system's Python, for example with pipx."
 )
+SIDE_STATES = {
+    (0, "empty"): N_("FRONT · Not added"),
+    (1, "empty"): N_("BACK · Not added"),
+    (0, "found"): N_("FRONT · Added"),
+    (1, "found"): N_("BACK · Added"),
+    (0, "not found"): N_("FRONT · Added, card not found"),
+    (1, "not found"): N_("BACK · Added, card not found"),
+}
+THEME_NAMES = {"System": N_("System"), "Light": N_("Light"), "Dark": N_("Dark")}
 
 
 class App(ctk.CTk):
@@ -68,7 +78,7 @@ class App(ctk.CTk):
         self.scan_cancel = None
         self.closing = False
         self.device_names = {}
-        id2pdf.set_language("en")
+        id2pdf.set_language(i18n.current())
         self.icon = tkinter.PhotoImage(file=ICON)
         self.iconphoto(True, self.icon)
         self.set_windows_icon(self)
@@ -88,19 +98,21 @@ class App(ctk.CTk):
         ctk.CTkLabel(panel, text="ID Scanner", font=("", 28, "bold")).grid(
             row=0, column=0, padx=24, pady=(30, 4), sticky="w"
         )
-        ctk.CTkLabel(panel, text="Two sides. One A4 PDF.", text_color="gray").grid(row=1, column=0, padx=24, sticky="w")
-        ctk.CTkLabel(panel, text="SCANNER", font=("", 12, "bold")).grid(
+        ctk.CTkLabel(panel, text=_("Two sides. One A4 PDF."), text_color="gray").grid(
+            row=1, column=0, padx=24, sticky="w"
+        )
+        ctk.CTkLabel(panel, text=_("SCANNER"), font=("", 12, "bold")).grid(
             row=2, column=0, padx=24, pady=(30, 8), sticky="w"
         )
-        self.device = ctk.CTkOptionMenu(panel, values=["No scanner selected"], command=self.choose_device)
+        self.device = ctk.CTkOptionMenu(panel, values=[_("No scanner selected")], command=self.choose_device)
         self.device.grid(row=3, column=0, padx=24, sticky="ew")
         self.scanner_controls.append(self.device)
-        self.refresh_button = self.button(panel, "Refresh scanners", self.refresh, 4, self.scanner_controls)
+        self.refresh_button = self.button(panel, _("Refresh scanners"), self.refresh, 4, self.scanner_controls)
         self.side_labels = []
         for side, row in ((0, 6), (1, 9)):
             label = ctk.CTkLabel(
                 panel,
-                text=f"{'FRONT' if side == 0 else 'BACK'} · Not added",
+                text=_(SIDE_STATES[side, "empty"]),
                 anchor="w",
             )
             label.grid(row=row, column=0, padx=24, pady=(16, 0), sticky="ew")
@@ -108,22 +120,22 @@ class App(ctk.CTk):
             self.label_color = label.cget("text_color")
             self.button(
                 panel,
-                "Scan " + ("front" if side == 0 else "back"),
+                _("Scan front") if side == 0 else _("Scan back"),
                 lambda s=side: self.scan_side(s),
                 row + 1,
                 self.scanner_controls,
             )
-            self.button(panel, "Choose image…", lambda s=side: self.load_side(s), row + 2)
-        ctk.CTkLabel(panel, text="DOCUMENT", font=("", 12, "bold"), anchor="w").grid(
+            self.button(panel, _("Choose image…"), lambda s=side: self.load_side(s), row + 2)
+        ctk.CTkLabel(panel, text=_("DOCUMENT"), font=("", 12, "bold"), anchor="w").grid(
             row=12, column=0, padx=24, pady=(24, 0), sticky="ew"
         )
-        self.save_button = self.button(panel, "Save PDF…", self.save, 13)
-        self.button(panel, "Clear document", self.clear, 14)
+        self.save_button = self.button(panel, _("Save PDF…"), self.save, 13)
+        self.button(panel, _("Clear document"), self.clear, 14)
         self.cancel_button = ctk.CTkButton(
-            panel, text="Cancel scan", command=self.cancel_scan, state="disabled", height=36, corner_radius=8
+            panel, text=_("Cancel scan"), command=self.cancel_scan, state="disabled", height=36, corner_radius=8
         )
         self.cancel_button.grid(row=15, column=0, padx=24, pady=(8, 0), sticky="ew")
-        ctk.CTkLabel(panel, text="Processed locally on your computer.", text_color="gray").grid(
+        ctk.CTkLabel(panel, text=_("Processed locally on your computer."), text_color="gray").grid(
             row=16, column=0, padx=24, pady=12, sticky="w"
         )
 
@@ -131,10 +143,10 @@ class App(ctk.CTk):
         view.grid(row=0, column=1, sticky="nsew", padx=28, pady=24)
         view.grid_columnconfigure(0, weight=1)
         view.grid_rowconfigure(1, weight=1)
-        ctk.CTkLabel(view, text="Document preview", font=("", 20, "bold")).grid(row=0, column=0, sticky="w")
+        ctk.CTkLabel(view, text=_("Document preview"), font=("", 20, "bold")).grid(row=0, column=0, sticky="w")
         links = ctk.CTkFrame(view, fg_color="transparent")
         links.grid(row=0, column=1, sticky="e")
-        for column, (text, command) in enumerate((("Help", self.show_help), ("About", self.show_about))):
+        for column, (text, command) in enumerate(((_("Help"), self.show_help), (_("About"), self.show_about))):
             ctk.CTkButton(
                 links,
                 text=text,
@@ -146,13 +158,13 @@ class App(ctk.CTk):
             ).grid(row=0, column=column, padx=(8, 0))
         self.preview = ctk.CTkLabel(
             view,
-            text="Add the front and back of your card\nto build your document.",
+            text=_("Add the front and back of your card\nto build your document."),
             fg_color=("#dfe5ef", "#202a39"),
             corner_radius=16,
         )
         self.preview.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=18)
         self.preview.bind("<Configure>", lambda event: self.render())
-        self.status = ctk.CTkLabel(view, text="Ready", anchor="w", justify="left", wraplength=520)
+        self.status = ctk.CTkLabel(view, text=_("Ready"), anchor="w", justify="left", wraplength=520)
         self.status.grid(row=2, column=0, columnspan=2, sticky="ew")
         # Wrap at the label's real width. CTkLabel.bind would go to its inner widgets, so bind the frame itself;
         # wraplength is given unscaled, like every CustomTkinter size.
@@ -170,7 +182,7 @@ class App(ctk.CTk):
         self.progress.configure(progress_color=self.progress.cget("fg_color"))
         self.lacks_xft = tk_lacks_xft(self.tk)
         if self.lacks_xft:
-            print(f"ID Scanner: {NO_XFT}", file=sys.stderr)
+            print(f"ID Scanner: {_(NO_XFT)}", file=sys.stderr)
         self.update_controls()
         self.after(100, self.poll)
         self.after(0, lambda: self.refresh(startup=True))
@@ -187,29 +199,52 @@ class App(ctk.CTk):
             window.iconbitmap(ICON.with_suffix(".ico"))
 
     def show_help(self):
-        self.dialog("ID Scanner Help", "How to use ID Scanner", HELP)
+        self.dialog(_("ID Scanner Help"), _("How to use ID Scanner"), _(HELP))
 
     def show_about(self):
         image = ctk.CTkImage(Image.open(ICON), size=(96, 96))
-        self.dialog("About ID Scanner", f"ID Scanner {version('idscanner')}", ABOUT, image, extra=self.theme_picker)
+        self.dialog(
+            _("About ID Scanner"), f"ID Scanner {version('idscanner')}", _(ABOUT), image, extra=self.preferences
+        )
 
-    def theme_picker(self, window):
+    def preferences(self, window):
+        themes = {_(THEME_NAMES[theme]): theme for theme in settings.THEMES}
         row = ctk.CTkFrame(window, fg_color="transparent")
         row.pack(padx=32, pady=(18, 0), fill="x")
-        ctk.CTkLabel(row, text="Theme").pack(side="left")
-        picker = ctk.CTkSegmentedButton(row, values=list(settings.THEMES), command=self.set_theme)
-        picker.set(settings.theme())
+        ctk.CTkLabel(row, text=_("Theme")).pack(side="left")
+        picker = ctk.CTkSegmentedButton(row, values=list(themes), command=lambda name: self.set_theme(themes[name]))
+        picker.set(_(THEME_NAMES[settings.theme()]))
         picker.pack(side="right")
+
+        system = _("System language")
+        languages = {system: None} | {name: code for code, name in i18n.LANGUAGES.items()}
+        row = ctk.CTkFrame(window, fg_color="transparent")
+        row.pack(padx=32, pady=(12, 0), fill="x")
+        ctk.CTkLabel(row, text=_("Language")).pack(side="left")
+        note = ctk.CTkLabel(window, text="", text_color="gray", justify="left", anchor="w", wraplength=600)
+        note.pack(padx=32, pady=(6, 0), fill="x")
+
+        def choose(name):
+            settings.save(language=languages[name])
+            # The window keeps its language until a restart; say so in the new one.
+            language = languages[name] or i18n.system_language()
+            message = N_("The language changes when ID Scanner is started again.")
+            note.configure(text=i18n.translation(language).gettext(message) if language != i18n.current() else "")
+
+        menu = ctk.CTkOptionMenu(row, values=list(languages), command=choose)
+        menu.set(i18n.LANGUAGES.get(settings.language(), system))
+        menu.pack(side="right")
 
     def set_theme(self, theme):
         ctk.set_appearance_mode(theme.lower())
         settings.save(theme=theme)
 
-    def dialog(self, title, heading, text, image=None, buttons=("Close",), extra=None):
+    def dialog(self, title, heading, text, image=None, buttons=None, extra=None):
         """A modal dialog; returns the text of the button clicked, or None when dismissed.
 
         extra(window) can add widgets between the text and the buttons.
         """
+        buttons = buttons or (_("Close"),)
         window = ctk.CTkToplevel(self)
         window.title(title)
         window.resizable(False, False)
@@ -257,7 +292,7 @@ class App(ctk.CTk):
         # Scanner controls also wait for discovery; the rest of the app does not.
         for control in self.scanner_controls:
             control.configure(state="disabled" if self.busy or self.discovery else "normal")
-        self.refresh_button.configure(text=SEARCHING if self.discovery else "Refresh scanners")
+        self.refresh_button.configure(text=_(SEARCHING) if self.discovery else _("Refresh scanners"))
         if self.busy or any(side is None for side in self.sides):
             self.save_button.configure(state="disabled")
         self.cancel_button.configure(state="normal" if self.busy and self.scan_cancel is not None else "disabled")
@@ -299,7 +334,7 @@ class App(ctk.CTk):
             self.scan_cancel = None
             self.update_controls()  # before any dialog, so the window behind it is no longer greyed out
             if isinstance(error, ScanCancelled):
-                self.status.configure(text="Scanning cancelled.")
+                self.status.configure(text=_("Scanning cancelled."))
             elif error is not None:
                 raise error
             else:
@@ -318,8 +353,8 @@ class App(ctk.CTk):
             try:
                 finish(result, error)
             except Exception as exception:
-                self.status.configure(text="Could not complete the operation. You can try again.")
-                self.dialog("ID Scanner", "Could not complete the operation", str(exception))
+                self.status.configure(text=_("Could not complete the operation. You can try again."))
+                self.dialog("ID Scanner", _("Could not complete the operation"), str(exception))
                 self.update_controls()
         self.after(100, self.poll)
 
@@ -333,11 +368,11 @@ class App(ctk.CTk):
         cancel = threading.Event()
         # At startup a broken Tk matters more than the search, which the Refresh button shows anyway.
         if not (startup and self.lacks_xft):
-            self.status.configure(text=SEARCHING)
+            self.status.configure(text=_(SEARCHING))
 
         def report(text):
             # Leave the status alone if an operation started meanwhile has replaced it.
-            if self.status.cget("text") == SEARCHING:
+            if self.status.cget("text") == _(SEARCHING):
                 self.status.configure(text=text)
 
         def finish(devices, error):
@@ -345,24 +380,25 @@ class App(ctk.CTk):
             self.update_controls()
             if error is not None:
                 if startup:
-                    report("Could not look for scanners. Click Refresh scanners to see why.")
+                    report(_("Could not look for scanners. Click Refresh scanners to see why."))
                 else:
-                    report("Could not look for scanners. You can try again.")
-                    self.dialog("ID Scanner", "Could not look for scanners", str(error))
+                    report(_("Could not look for scanners. You can try again."))
+                    self.dialog("ID Scanner", _("Could not look for scanners"), str(error))
                 return
             if devices is None:
                 self.device_names = {}
-                self.device.configure(values=["SANE not installed"])
-                self.device.set("SANE not installed")
-                report("Scanning requires SANE. Use Choose image… to work with existing images.")
+                self.device.configure(values=[_("SANE not installed")])
+                self.device.set(_("SANE not installed"))
+                report(_("Scanning requires SANE. Use Choose image… to work with existing images."))
                 if not startup:
                     self.dialog(
-                        "SANE required for scanning",
-                        "SANE required for scanning",
-                        "The scanimage command was not found. Install SANE to scan from this application.\n\n"
-                        f"{sane_install_help()}\n\n"
-                        "Alternatively, use Choose image… to load the front and back from existing images.\n\n"
-                        "After installing SANE, click Refresh scanners again.",
+                        _("SANE required for scanning"),
+                        _("SANE required for scanning"),
+                        _("The scanimage command was not found. Install SANE to scan from this application.")
+                        + f"\n\n{sane_install_help()}\n\n"
+                        + _("Alternatively, use Choose image… to load the front and back from existing images.")
+                        + "\n\n"
+                        + _("After installing SANE, click Refresh scanners again."),
                     )
                 return
             previous = self.device_names.get(self.device.get())
@@ -372,9 +408,9 @@ class App(ctk.CTk):
             labels = {name: label for label, name in self.device_names.items()}
             # The remembered scanner wins over the current selection, which may have been a fallback.
             chosen = choose_scanner(devices, settings.load().get("device"), previous)
-            self.device.configure(values=list(self.device_names) or ["No scanner found"])
-            self.device.set(labels.get(chosen, "No scanner found"))
-            report("Scanner list updated." if devices else "No scanner found. You can choose image files.")
+            self.device.configure(values=list(self.device_names) or [_("No scanner found")])
+            self.device.set(labels.get(chosen, _("No scanner found")))
+            report(_("Scanner list updated.") if devices else _("No scanner found. You can choose image files."))
 
         self.discovery = (cancel, self.in_background(lambda: find_scanners(cancel), finish))
         self.update_controls()
@@ -388,13 +424,15 @@ class App(ctk.CTk):
             return
         device = self.device_names.get(self.device.get())
         if not device:
-            self.dialog("Choose a scanner", "Choose a scanner", "Refresh the scanner list and choose a scanner first.")
+            self.dialog(
+                _("Choose a scanner"), _("Choose a scanner"), _("Refresh the scanner list and choose a scanner first.")
+            )
             return
 
         cancel = threading.Event()
         self.scan_cancel = cancel
         self.run_task(
-            "Scanning and straightening the card…",
+            _("Scanning and straightening the card…"),
             lambda: scan_side(device, front=side == 0, cancel=cancel),
             lambda image: self.set_side(side, image, found=True),
         )
@@ -403,20 +441,20 @@ class App(ctk.CTk):
         if self.scan_cancel is not None:
             self.scan_cancel.set()
             self.cancel_button.configure(state="disabled")
-            self.status.configure(text="Cancelling scan…")
+            self.status.configure(text=_("Cancelling scan…"))
 
     def load_side(self, side):
         filename = filedialog.askopenfilename(
             parent=self,
-            title="Choose a card image",
+            title=_("Choose a card image"),
             filetypes=[
-                ("Images", "*.jpg *.jpeg *.png *.webp *.tif *.tiff *.bmp"),
-                ("All files", "*"),
+                (_("Images"), "*.jpg *.jpeg *.png *.webp *.tif *.tiff *.bmp"),
+                (_("All files"), "*"),
             ],
         )
         if filename:
             self.run_task(
-                "Opening and detecting the card…",
+                _("Opening and detecting the card…"),
                 lambda: card_from_file(Path(filename)),
                 lambda result: self.set_side(side, *result),
                 closable=True,
@@ -425,16 +463,17 @@ class App(ctk.CTk):
     def set_side(self, side, image, found):
         self.sides[side] = image
         self.cached_page = None
-        name = "FRONT" if side == 0 else "BACK"
         if found:
-            self.side_labels[side].configure(text=f"{name} · Added", text_color=self.label_color)
-            self.status.configure(text="Side added. Check the preview before saving.")
+            self.side_labels[side].configure(text=_(SIDE_STATES[side, "found"]), text_color=self.label_color)
+            self.status.configure(text=_("Side added. Check the preview before saving."))
         else:
             # Without a card the whole image would be shrunk onto the page, background and all.
-            self.side_labels[side].configure(text=f"{name} · Added, card not found", text_color=WARNING)
+            self.side_labels[side].configure(text=_(SIDE_STATES[side, "not found"]), text_color=WARNING)
             self.status.configure(
-                text="No card found in this image, so the whole image was added. "
-                "Choose a clearer image or crop it to the card."
+                text=_(
+                    "No card found in this image, so the whole image was added. "
+                    "Choose a clearer image or crop it to the card."
+                )
             )
         self.render()
 
@@ -451,7 +490,7 @@ class App(ctk.CTk):
             self.preview_image = ctk.CTkImage(light_image=BLANK, dark_image=BLANK, size=(1, 1))
             self.preview.configure(
                 image=self.preview_image,
-                text="Add the front and back of your card\nto build your document.",
+                text=_("Add the front and back of your card\nto build your document."),
             )
             return
         page = self.page().copy()
@@ -466,34 +505,33 @@ class App(ctk.CTk):
     def save(self):
         filename = filedialog.asksaveasfilename(
             parent=self,
-            title="Save A4 PDF",
+            title=_("Save A4 PDF"),
             defaultextension=".pdf",
-            initialfile="id-card.pdf",
-            filetypes=[("PDF document", "*.pdf")],
+            initialfile=_("id-card.pdf"),
+            filetypes=[(_("PDF document"), "*.pdf")],
         )
         if filename:
             page = self.page()
             self.run_task(
-                "Saving PDF…",
+                _("Saving PDF…"),
                 lambda: save_pdf_atomic(page, Path(filename)),
-                lambda _: self.status.configure(text=f"Saved: {filename}"),
+                lambda result: self.status.configure(text=_("Saved: {path}").format(path=filename)),
             )
 
     def clear(self):
-        if (
-            any(side is not None for side in self.sides)
-            and self.dialog(
-                "Clear document", "Clear document", "Remove both sides from this document?", buttons=("Cancel", "Clear")
-            )
-            != "Clear"
-        ):
+        if any(side is not None for side in self.sides) and self.dialog(
+            _("Clear document"),
+            _("Clear document"),
+            _("Remove both sides from this document?"),
+            buttons=(_("Cancel"), _("Clear")),
+        ) != _("Clear"):
             return
         self.sides = [None, None]
         self.cached_page = None
         for side, label in enumerate(self.side_labels):
-            label.configure(text=f"{'FRONT' if side == 0 else 'BACK'} · Not added", text_color=self.label_color)
+            label.configure(text=_(SIDE_STATES[side, "empty"]), text_color=self.label_color)
         self.render()
-        self.status.configure(text="Ready")
+        self.status.configure(text=_("Ready"))
         self.update_controls()
 
     def close(self):
@@ -509,21 +547,17 @@ class App(ctk.CTk):
     def ask_and_close(self):
         if self.busy and not self.closable:
             self.dialog(
-                "Operation in progress",
-                "Operation in progress",
-                "Please wait for the operation to finish before closing.",
+                _("Operation in progress"),
+                _("Operation in progress"),
+                _("Please wait for the operation to finish before closing."),
             )
             return
-        if (
-            any(side is not None for side in self.sides)
-            and self.dialog(
-                "Close ID Scanner",
-                "Close this document?",
-                "Make sure you have saved your PDF.",
-                buttons=("Cancel", "Close"),
-            )
-            != "Close"
-        ):
+        if any(side is not None for side in self.sides) and self.dialog(
+            _("Close ID Scanner"),
+            _("Close this document?"),
+            _("Make sure you have saved your PDF."),
+            buttons=(_("Cancel"), _("Close")),
+        ) != _("Close"):
             return
         if self.discovery:
             # Stop scanimage instead of leaving it behind, possibly holding a USB scanner.

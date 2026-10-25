@@ -2,6 +2,8 @@
 
 import platform
 
+from .i18n import _
+
 SANE_COMMANDS = {
     "debian": "sudo apt install sane-utils",
     "ubuntu": "sudo apt install sane-utils",
@@ -33,27 +35,31 @@ def linux_install_help(commands: dict[str, str], fallback: str) -> str:
     # Prefer the distribution itself, then its compatible parents in order.
     candidates = [release.get("ID", ""), *release.get("ID_LIKE", "").split()]
     command = next((commands[key] for key in candidates if key in commands), None)
+    detected = _("Detected system: {name}").format(name=name)
     if command:
-        return f"Detected system: {name}\nRun this command in a terminal:\n{command}"
-    return f"Detected system: {name}\n{fallback}"
+        return f"{detected}\n" + _("Run this command in a terminal:") + f"\n{command}"
+    return f"{detected}\n{fallback}"
 
 
 def sane_install_help() -> str:
     if platform.system() != "Linux":
-        return "Scanner support in this application requires Linux and SANE."
+        return _("Scanner support in this application requires Linux and SANE.")
     return linux_install_help(
-        SANE_COMMANDS, "Install the package providing scanimage using your system's package manager."
+        SANE_COMMANDS, _("Install the package providing scanimage using your system's package manager.")
     )
 
 
 def tk_install_help() -> str:
     system = platform.system()
     if system == "Windows":
-        return 'Reinstall Python from python.org and keep the "tcl/tk and IDLE" option selected.'
+        return _('Reinstall Python from python.org and keep the "tcl/tk and IDLE" option selected.')
     if system == "Darwin":
-        return "Install Python from python.org, which includes Tk, or with Homebrew run:\nbrew install python-tk"
+        return (
+            _("Install Python from python.org, which includes Tk, or with Homebrew run:") + "\nbrew install python-tk"
+        )
     return linux_install_help(
-        TK_COMMANDS, "Install the Tk package for Python (often called python3-tk) using your system's package manager."
+        TK_COMMANDS,
+        _("Install the Tk package for Python (often called python3-tk) using your system's package manager."),
     )
 
 
