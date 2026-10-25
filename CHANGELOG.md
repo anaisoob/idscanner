@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- Choose image… finds cards on a printed page or a white keyboard too, by their colour
+  (id2pdf 0.3.0).
+
 ## 0.4.0
 
 - Save… writes a JPEG or PNG image too, for forms that only accept images: A4 at 300 dpi,
